@@ -1,0 +1,6 @@
+ com.brielmayer.teda.database.mysql.MySqlDatabaseType
+ com.brielmayer.teda.database.postgres.PostgresDatabaseType
+ com.brielmayer.teda.database.oracle.OracleDatabaseType
+ com.brielmayer.teda.database.sqlserver.SqlServerDatabaseType
+ com.brielmayer.teda.database.mariadb.MariaDbDatabaseType
+ com.brielmayer.teda.database.h2.H2DatabaseType
