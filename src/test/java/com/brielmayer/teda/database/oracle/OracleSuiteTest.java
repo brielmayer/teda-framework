@@ -36,12 +36,12 @@ public class OracleSuiteTest {
 
         // Create and initialize database
         database = DatabaseFactory.createDatabase(dataSource);
-        database.executeQuery(ResourceReader.getResourceAsString("database/oracle/CREATE_TEST_TABLE.sql"));
+        database.executeQuery(ResourceReader.asString("database/oracle/CREATE_TEST_TABLE.sql"));
     }
 
     @Test
     void loadTest() {
         new Teda(database.getDataSource(), new LogExecutionHandler())
-                .execute(ResourceReader.getResourceAsInputStream("teda/LOAD_TEST.xlsx"), DocumentType.EXCEL);
+                .execute(ResourceReader.asInputStream("teda/LOAD_TEST.xlsx"), DocumentType.EXCEL);
     }
 }
