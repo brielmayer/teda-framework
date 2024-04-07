@@ -27,11 +27,11 @@ public class TypeParser {
     // ----------------------------------------------------
     // java.lang.Boolean    -> java.lang.Boolean
     // ----------------------------------------------------
-    // java.lang.Byte       -> java.math.BigInteger
-    // java.lang.Short      -> java.math.BigInteger
-    // java.lang.Integer    -> java.math.BigInteger
-    // java.lang.Long       -> java.math.BigInteger
-    // java.math.BigInteger -> java.math.BigInteger
+    // java.lang.Byte       -> java.math.BigDecimal
+    // java.lang.Short      -> java.math.BigDecimal
+    // java.lang.Integer    -> java.math.BigDecimal
+    // java.lang.Long       -> java.math.BigDecimal
+    // java.math.BigInteger -> java.math.BigDecimal
     // ----------------------------------------------------
     // java.lang.Float      -> java.math.BigDecimal
     // java.lang.Double     -> java.math.BigDecimal
@@ -75,22 +75,22 @@ public class TypeParser {
 
         // java.lang.Byte
         if (value instanceof Byte) {
-            return BigInteger.valueOf((Byte) value);
+            return BigDecimal.valueOf((Byte) value);
         }
 
         // java.lang.Short
         if (value instanceof Short) {
-            return BigInteger.valueOf((Short) value);
+            return BigDecimal.valueOf((Short) value);
         }
 
         // java.lang.Integer
         if (value instanceof Integer) {
-            return BigInteger.valueOf((Integer) value);
+            return BigDecimal.valueOf((Integer) value);
         }
 
         // java.lang.Long
         if (value instanceof Long) {
-            return BigInteger.valueOf((Long) value);
+            return BigDecimal.valueOf((Long) value);
         }
 
         // java.lang.Float
@@ -128,10 +128,10 @@ public class TypeParser {
 
         // java.lang.Long
         if (LONG_PATTERN.matcher((String) value).matches()) {
-            return BigInteger.valueOf(Long.parseLong((String) value));
+            return BigDecimal.valueOf(Long.parseLong((String) value));
         }
 
-        // java.lang.double
+        // java.lang.Double
         if (DOUBLE_PATTERN.matcher((String) value).matches()) {
             return BigDecimal.valueOf(Double.parseDouble((String) value));
         }

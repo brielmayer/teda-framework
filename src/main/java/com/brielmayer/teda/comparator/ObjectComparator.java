@@ -14,7 +14,7 @@ public final class ObjectComparator {
 
         if (!o1.getClass().getSimpleName().equals(o2.getClass().getSimpleName())) {
             throw TedaException.builder()
-                    .appendMessage("Types are not equal %s and %s with o1 value %s", o1.getClass().getSimpleName(), o2.getClass().getSimpleName(), o1.toString())
+                    .appendMessage("Types are not equal %s and %s with o1 = %s and o2 = %s", o1.getClass().getSimpleName(), o2.getClass().getSimpleName(), o1.toString(), o2.toString())
                     .build();
         }
 
