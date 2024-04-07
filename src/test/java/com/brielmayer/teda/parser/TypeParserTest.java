@@ -3,7 +3,6 @@ package com.brielmayer.teda.parser;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -13,7 +12,6 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TypeParserTest {
 
@@ -79,34 +77,34 @@ public class TypeParserTest {
 
     @Test
     public void testLong() {
-        assertEquals(BigInteger.valueOf(2L), TypeParser.parse(2L));
-        assertEquals(BigInteger.valueOf(2211313123L), TypeParser.parse(2211313123L));
+        assertEquals(BigDecimal.valueOf(2L), TypeParser.parse(2L));
+        assertEquals(BigDecimal.valueOf(2211313123L), TypeParser.parse(2211313123L));
     }
 
     @Test
     public void testLongAsString() {
-        assertEquals(BigInteger.valueOf(0L), TypeParser.parse("0"));
-        assertEquals(BigInteger.valueOf(1L), TypeParser.parse("1"));
-        assertEquals(BigInteger.valueOf(-1L), TypeParser.parse("-1"));
-        assertEquals(BigInteger.valueOf(3424L), TypeParser.parse("3424"));
-        assertEquals(BigInteger.valueOf(43378373783L), TypeParser.parse("43378373783"));
-        assertEquals(BigInteger.valueOf(23277283278328328L), TypeParser.parse("23277283278328328"));
-        assertEquals(BigInteger.valueOf(-23277283278328328L), TypeParser.parse("-23277283278328328"));
+        assertEquals(BigDecimal.valueOf(0L), TypeParser.parse("0"));
+        assertEquals(BigDecimal.valueOf(1L), TypeParser.parse("1"));
+        assertEquals(BigDecimal.valueOf(-1L), TypeParser.parse("-1"));
+        assertEquals(BigDecimal.valueOf(3424L), TypeParser.parse("3424"));
+        assertEquals(BigDecimal.valueOf(43378373783L), TypeParser.parse("43378373783"));
+        assertEquals(BigDecimal.valueOf(23277283278328328L), TypeParser.parse("23277283278328328"));
+        assertEquals(BigDecimal.valueOf(-23277283278328328L), TypeParser.parse("-23277283278328328"));
     }
 
     @Test
     public void testByte() {
-        assertEquals(BigInteger.valueOf(2L), TypeParser.parse((byte) 2));
+        assertEquals(BigDecimal.valueOf(2L), TypeParser.parse((byte) 2));
     }
 
     @Test
     public void testShort() {
-        assertEquals(BigInteger.valueOf(2L), TypeParser.parse((short) 2));
+        assertEquals(BigDecimal.valueOf(2L), TypeParser.parse((short) 2));
     }
 
     @Test
     public void testInteger() {
-        assertEquals(BigInteger.valueOf(2L), TypeParser.parse(2));
+        assertEquals(BigDecimal.valueOf(2L), TypeParser.parse(2));
     }
 
     @Test

@@ -28,13 +28,13 @@ public class OdsTest {
 
         // Create and initialize database
         database = DatabaseFactory.createDatabase(dataSource);
-        database.executeQuery(ResourceReader.getResourceAsString("database/mysql/CREATE_TEST_TABLE.sql"));
+        database.executeQuery(ResourceReader.asString("database/mysql/CREATE_TEST_TABLE.sql"));
     }
 
     @Test
     void loadTestMySql8() {
         initializeDatabase(mySqlContainer8_0_31);
         new Teda(database.getDataSource(), new LogExecutionHandler())
-                .execute(ResourceReader.getResourceAsInputStream("teda/LOAD_TEST.ods"), DocumentType.OPEN_DOCUMENT_SPREADSHEET);
+                .execute(ResourceReader.asInputStream("teda/LOAD_TEST.ods"), DocumentType.OPEN_DOCUMENT_SPREADSHEET);
     }
 }

@@ -35,7 +35,7 @@ public class DifferentDatabasesTest {
         mysqlDataSource.setUrl(mySqlContainer.getJdbcUrl());
         mysqlDataSource.setUser(mySqlContainer.getUsername());
         mysqlDatabase = DatabaseFactory.createDatabase(mysqlDataSource);
-        mysqlDatabase.executeQuery(ResourceReader.getResourceAsString("database/mysql/CREATE_TEST_TABLE.sql"));
+        mysqlDatabase.executeQuery(ResourceReader.asString("database/mysql/CREATE_TEST_TABLE.sql"));
 
         // Setup PostgreSQL database
         PGSimpleDataSource postgresDataSource = new PGSimpleDataSource();
@@ -43,12 +43,12 @@ public class DifferentDatabasesTest {
         postgresDataSource.setUrl(postgreSQLContainer.getJdbcUrl());
         postgresDataSource.setUser(postgreSQLContainer.getUsername());
         postgresDatabase = DatabaseFactory.createDatabase(postgresDataSource);
-        postgresDatabase.executeQuery(ResourceReader.getResourceAsString("database/postgres/CREATE_TEST_TABLE.sql"));
+        postgresDatabase.executeQuery(ResourceReader.asString("database/postgres/CREATE_TEST_TABLE.sql"));
     }
 
     @Test
     void testWithTwoDifferentDatabaseTypes() {
         new Teda(mysqlDatabase.getDataSource(), postgresDatabase.getDataSource(), new LogExecutionHandler())
-                .execute(ResourceReader.getResourceAsInputStream("teda/DIFFERENT_DATABASE_TEST.xlsx"), DocumentType.EXCEL);
+                .execute(ResourceReader.asInputStream("teda/DIFFERENT_DATABASE_TEST.xlsx"), DocumentType.EXCEL);
     }
 }

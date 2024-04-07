@@ -11,13 +11,13 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class ResourceReader {
 
-    public InputStream getResourceAsInputStream(String fileName) {
+    public InputStream asInputStream(String fileName) {
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         return classLoader.getResourceAsStream(fileName);
     }
 
-    public String getResourceAsString(String fileName) {
-        try (InputStream is = getResourceAsInputStream(fileName)) {
+    public String asString(String fileName) {
+        try (InputStream is = asInputStream(fileName)) {
             if (is == null) {
                 throw new IllegalArgumentException("File not found: " + fileName);
             }

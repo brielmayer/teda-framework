@@ -23,12 +23,12 @@ public class H2Test {
 
         // Create and initialize database
         database = DatabaseFactory.createDatabase(dataSource);
-        database.executeQuery(ResourceReader.getResourceAsString("database/h2/CREATE_TEST_TABLE.sql"));
+        database.executeQuery(ResourceReader.asString("database/h2/CREATE_TEST_TABLE.sql"));
     }
 
     @Test
     void loadTest() {
         new Teda(database.getDataSource())
-                .execute(ResourceReader.getResourceAsInputStream("teda/LOAD_TEST.xlsx"), DocumentType.EXCEL);
+                .execute(ResourceReader.asInputStream("teda/LOAD_TEST.xlsx"), DocumentType.EXCEL);
     }
 }
