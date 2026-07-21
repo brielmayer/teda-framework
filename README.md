@@ -6,7 +6,7 @@
 
 Teda lets you write database and data-pipeline tests as an Excel or OpenDocument
 spreadsheet instead of Java code. You describe **what data to load**, **what
-process to trigger**, and **what the result should look like** — Teda inserts the
+process to trigger**, and **what the result should look like**. Teda inserts the
 data, runs the process, reads the actual rows back, and compares them against your
 expectations. If anything differs, the test fails with a precise diff.
 
@@ -27,7 +27,8 @@ outcome in another.
 - [Actions Reference](#actions-reference)
 - [Type Handling](#type-handling)
 - [Load vs. Test Database](#load-vs-test-database)
-- [Custom Execution Handlers](#custom-execution-handlers)
+- [Custom Handlers](#custom-handlers)
+- [FAQ](#faq)
 - [Building from Source](#building-from-source)
 
 ---
@@ -35,11 +36,11 @@ outcome in another.
 ## Why Teda?
 
 - **No boilerplate.** A tester or business analyst can express a full test case in
-  a spreadsheet — no JDBC, no assertion code.
+  a spreadsheet, no JDBC, no assertion code.
 - **Readable test data.** Input and expected output live side by side in tabular
   form, exactly how humans think about data.
 - **Database-agnostic comparisons.** Teda normalizes types (numbers, dates, UUIDs,
-  booleans) so the same test passes across MySQL, PostgreSQL, Oracle, and the rest —
+  booleans) so the same test passes across MySQL, PostgreSQL, Oracle, and the rest,
   even when the JDBC drivers return different Java types.
 - **Load here, verify there.** Use separate source and target databases to test
   real ETL / migration flows in a single test file.
@@ -58,36 +59,41 @@ outcome in another.
 | H2                   | ✅ |
 
 The correct database implementation is resolved automatically from the
-`DataSource` using Java's `ServiceLoader` mechanism — you only provide a
+`DataSource` using Java's `ServiceLoader` mechanism. You only provide a
 `javax.sql.DataSource`.
 
 ## Supported File Formats
 
-| Format                   | Extension | Library        |
-|--------------------------|-----------|----------------|
-| Excel                    | `.xlsx`   | Apache POI     |
-| OpenDocument Spreadsheet | `.ods`    | jOpenDocument  |
+| Format                   | Extension | Library                           |
+|--------------------------|-----------|-----------------------------------|
+| Excel                    | `.xlsx`   | [FastExcel](https://github.com/dhatim/fastexcel) |
+| OpenDocument Spreadsheet | `.ods`    | [SODS](https://github.com/miachm/SODS) |
 
 ## Getting Started
 
-Teda is a Java 11 library built with Maven. Add it as a dependency (after building
-and installing it locally — see [Building from Source](#building-from-source)):
+Teda is a Java 11 library built with Maven. Add it as a test dependency:
 
 ```xml
 <dependency>
     <groupId>com.brielmayer</groupId>
     <artifactId>teda-framework</artifactId>
     <version>1.0.0-SNAPSHOT</version>
+    <scope>test</scope>
 </dependency>
 ```
 
-Then point Teda at a `DataSource` and a spreadsheet:
+Point Teda at a `DataSource` and a spreadsheet via the fluent
+`TedaConfiguration` builder:
 
 ```java
 import com.brielmayer.teda.Teda;
+import com.brielmayer.teda.config.TedaConfiguration;
 
-// Single database: data is loaded and verified against the same source
-new Teda(dataSource)
+TedaConfiguration configuration = TedaConfiguration.builder()
+        .withDatabase(dataSource)
+        .build();
+
+new Teda(configuration)
         .execute("src/test/resources/teda/STUDENT_TEST.xlsx");
 ```
 
@@ -100,14 +106,18 @@ class StudentTest {
 
     @Test
     void loadAndVerifyStudents() {
-        new Teda(dataSource)
+        TedaConfiguration configuration = TedaConfiguration.builder()
+                .withDatabase(dataSource)
+                .build();
+
+        new Teda(configuration)
                 .execute("teda/STUDENT_TEST.xlsx");
     }
 }
 ```
 
 The call throws a `TedaException` with a detailed message if the actual data does
-not match the expected data — plug it straight into any test framework.
+not match the expected data. Plug it straight into any test framework.
 
 ## How It Works
 
@@ -137,14 +147,14 @@ the run, plus additional sheets holding the actual data.
       └───────────────────────────────────────────────┘
 ```
 
-1. **Parse** – The spreadsheet is read into an in-memory model of sheets and tables.
-2. **Cockpit** – The first table of the first sheet (`Cockpit`) is the control
+1. **Parse.** The spreadsheet is read into an in-memory model of sheets and tables.
+2. **Cockpit.** The first table of the first sheet (`Cockpit`) is the control
    panel. Each of its rows lists actions to perform.
-3. **Execute** – For each row, Teda runs the actions in the fixed order
+3. **Execute.** For each row, Teda runs the actions in the fixed order
    `TRUNCATE → LOAD → EXECUTE → TEST`, using the cell value as the argument
    (a table name, a sheet name, or a value passed to your handler).
-4. **Compare** – `TEST` reads the real rows from the database and compares them, row
-   by row, against the expected rows — after sorting both by their primary-key
+4. **Compare.** `TEST` reads the real rows from the database and compares them,
+   row by row, against the expected rows, after sorting both by their primary-key
    columns and normalizing types.
 
 ## The Spreadsheet Layout
@@ -198,7 +208,7 @@ Within a row they always execute in this order:
 |------------|-----------------------------|--------|
 | `TRUNCATE` | a database table name       | Empties the table in the **test** database before loading. |
 | `LOAD`     | a sheet name                | Inserts every `#Table` block on that sheet into the **load** database. |
-| `EXECUTE`  | any value                   | Passes the value to your [`ExecutionHandler`](#custom-execution-handlers) — trigger an ETL job, stored procedure, etc. |
+| `EXECUTE`  | any value                   | Passes the value to your [`IExecutionHandler`](#custom-handlers), which typically triggers an ETL job, stored procedure, etc. |
 | `TEST`     | a sheet name                | Reads each `#Table` block's table from the **test** database and asserts it equals the expected rows. |
 
 ## Type Handling
@@ -222,22 +232,38 @@ Provide two `DataSource`s plus an execution handler that triggers the process
 between them:
 
 ```java
-new Teda(sourceDataSource, targetDataSource, new MyEtlExecutionHandler())
+TedaConfiguration configuration = TedaConfiguration.builder()
+        .withLoadDatabase(sourceDataSource)
+        .withTestDatabase(targetDataSource)
+        .withExecutionHandler(new MyEtlExecutionHandler())
+        .build();
+
+new Teda(configuration)
         .execute("teda/MIGRATION_TEST.xlsx");
 ```
 
 Here `LOAD` writes to the **source** database, `EXECUTE` runs your migration, and
-`TEST` verifies the rows that arrived in the **target** database. With a single
-`DataSource`, the load and test databases are the same.
+`TEST` verifies the rows that arrived in the **target** database. With
+`.withDatabase(ds)`, load and test databases are the same.
 
-## Custom Execution Handlers
+## Custom Handlers
 
-The `EXECUTE` action delegates to an `ExecutionHandler`. The default
-`LogExecutionHandler` just logs the value; implement your own to kick off the real
-work — an ETL job, a stored procedure, a REST call, and so on:
+`TedaConfiguration` accepts custom implementations for all four action handlers.
+Only override what you need; the defaults handle standard cases.
+
+| Handler              | Default              | Override when                                        |
+|----------------------|----------------------|------------------------------------------------------|
+| `ITruncateHandler`   | `TruncateHandler`    | you need something other than `TRUNCATE TABLE ...`.  |
+| `ILoadHandler`       | `LoadHandler`        | you want a custom insert strategy.                   |
+| `IExecutionHandler`  | `LogExecutionHandler`| you want `EXECUTE` to actually trigger a process.    |
+| `ITestHandler`       | `TestHandler`        | you want a different comparison strategy.            |
+
+The most common override is `IExecutionHandler`. The default just logs the value;
+implement your own to kick off the real work (an ETL job, a stored procedure, a
+REST call, and so on):
 
 ```java
-public class MyEtlExecutionHandler implements ExecutionHandler {
+public class MyEtlExecutionHandler implements IExecutionHandler {
     @Override
     public void execute(String value) {
         // 'value' is the cell content from the EXECUTE column,
@@ -247,25 +273,61 @@ public class MyEtlExecutionHandler implements ExecutionHandler {
 }
 ```
 
+Wire it up via the builder:
+
+```java
+TedaConfiguration configuration = TedaConfiguration.builder()
+        .withDatabase(dataSource)
+        .withExecutionHandler(new MyEtlExecutionHandler())
+        .build();
+```
+
+## FAQ
+
+**Does Teda pull in Apache POI?**
+No. Since version 1.0 Teda uses [FastExcel](https://github.com/dhatim/fastexcel)
+for `.xlsx` and [SODS](https://github.com/miachm/SODS) for `.ods`. Both are small,
+actively maintained, and free of Log4j transitive dependencies.
+
+**How are Excel formulas handled?**
+Teda reads the **cached result** of the formula, not the formula text. This is what
+Excel writes to the file the last time it saved. If a spreadsheet is generated
+programmatically without ever being opened by Excel or LibreOffice, formula cells
+may not have cached values; in that case Teda returns an empty string.
+
+**Do I need Docker to use Teda in my own tests?**
+Only if your own tests happen to use Testcontainers. The Teda library itself is a
+plain Java dependency. Teda's *own* test suite uses Testcontainers to verify
+against real MySQL, PostgreSQL, Oracle, SQL Server, and MariaDB instances.
+
+**Can I compare a subset of columns?**
+Only columns that appear as headers in the expected `#Table` block are compared.
+Columns that exist in the database but are not listed in the expectation are
+ignored.
+
 ## Building from Source
 
-Requirements: **JDK 17 or newer** (tested on 17 and 21). No local Maven
-installation is needed — the project ships with the Maven Wrapper.
+Requirements: **JDK 11 or newer** (built and tested on 11 and 17).
 
 ```bash
 # Compile and run the full test suite
-./mvnw verify
+mvn verify
 
 # Install to your local Maven repository
-./mvnw install
+mvn install
 ```
-
-On Windows use `mvnw.cmd` instead of `./mvnw`.
 
 The test suite uses [Testcontainers](https://www.testcontainers.org/) to spin up
 real MySQL, PostgreSQL, Oracle, SQL Server, and MariaDB instances, so a running
 **Docker** daemon is required to execute the database integration tests. The H2
 tests run in-memory without Docker.
+
+To publish a signed release to Maven Central, activate the `release` profile
+(requires a GPG key and Sonatype Central credentials):
+
+```bash
+mvn -Prelease clean deploy
+```
 
 ---
 

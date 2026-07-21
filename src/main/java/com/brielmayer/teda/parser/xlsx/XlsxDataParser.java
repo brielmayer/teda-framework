@@ -1,13 +1,13 @@
 package com.brielmayer.teda.parser.xlsx;
 
 import com.brielmayer.teda.model.Header;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.util.CellAddress;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
+import com.brielmayer.teda.parser.Coord;
+import org.dhatim.fastexcel.reader.Cell;
+import org.dhatim.fastexcel.reader.CellType;
+import org.dhatim.fastexcel.reader.Row;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -15,79 +15,72 @@ import java.util.Map;
 
 public class XlsxDataParser {
 
-    public static List<Map<String, Object>> parseData(XSSFSheet xssfSheet, CellAddress cellAddress) {
+    public static List<Map<String, Object>> parseData(List<Row> rows, Coord coord) {
         final List<Map<String, Object>> data = new ArrayList<>();
+        final List<Header> headers = XlsxHeaderParser.parseHeader(rows, coord);
 
-        final List<Header> headers = XlsxHeaderParser.parseHeader(xssfSheet, cellAddress);
-        for (int r = 2; ; r++) {
-            final XSSFRow xssfRow = xssfSheet.getRow(cellAddress.getRow() + r);
-            if (xssfRow == null) {
+        for (int r = coord.row + 2; r < rows.size(); r++) {
+            final Row row = rows.get(r);
+            if (row == null) {
                 // end of table reached
                 break;
             }
 
-            final Map<String, Object> row = new LinkedHashMap<>();
-            for (byte c = 0; c < headers.size(); c++) {
-                final XSSFCell cell = xssfRow.getCell(cellAddress.getColumn() + c + 1);
-                if (cell == null) {
-                    row.put(headers.get(c).getName(), "");
-                } else {
-                    row.put(headers.get(c).getName(), getCellValue(cell));
-                }
+            final Map<String, Object> rowMap = new LinkedHashMap<>();
+            for (int c = 0; c < headers.size(); c++) {
+                final Cell cell = XlsxTableParser.getCell(rows, r, coord.col + c + 1);
+                rowMap.put(headers.get(c).getName(), getCellValue(cell));
             }
 
-            if (isEmptyRow(row)) {
+            if (isEmptyRow(rowMap)) {
                 // end of table reached
                 break;
-            } else {
-                data.add(row);
             }
+            data.add(rowMap);
         }
-
         return data;
     }
 
     private static Object getCellValue(final Cell cell) {
-        switch (cell.getCellType()) {
+        if (cell == null) {
+            return "";
+        }
+        final CellType type = cell.getType();
+        if (type == CellType.FORMULA) {
+            return unwrap(cell.getValue());
+        }
+        switch (type) {
             case STRING:
-                return cell.getRichStringCellValue().getString();
-            case NUMERIC:
-                return getNumericValue(cell);
+                return cell.asString();
+            case NUMBER:
+                return unwrap(cell.getValue());
             case BOOLEAN:
-                return cell.getBooleanCellValue();
-            case FORMULA:
-                // use the cached result of the formula, not the formula text itself
-                return getFormulaValue(cell);
-            // BLANK or ERROR
+                return cell.asBoolean();
+            // EMPTY, ERROR
             default:
                 return "";
         }
     }
 
-    private static Object getFormulaValue(final Cell cell) {
-        switch (cell.getCachedFormulaResultType()) {
-            case STRING:
-                return cell.getRichStringCellValue().getString();
-            case NUMERIC:
-                return getNumericValue(cell);
-            case BOOLEAN:
-                return cell.getBooleanCellValue();
-            default:
-                return "";
+    private static Object unwrap(final Object value) {
+        if (value == null) {
+            return "";
         }
-    }
-
-    private static Object getNumericValue(final Cell cell) {
-        if (DateUtil.isCellDateFormatted(cell)) {
-            // if cell is a date
-            return cell.getDateCellValue();
-        } else if (isMathematicalInteger(cell.getNumericCellValue())) {
-            // if cell is a int / long
-            return (long) cell.getNumericCellValue();
-        } else {
-            // else return double
-            return cell.getNumericCellValue();
+        // Date-formatted numeric cells surface as LocalDateTime
+        if (value instanceof LocalDateTime) {
+            return value;
         }
+        // Round-trip through double to strip Excel's storage precision
+        // artifacts (e.g. 4.393949494 stored as 4.3939494940000001), matching
+        // POI's Double.toString-based behavior.
+        if (value instanceof BigDecimal) {
+            final double d = ((BigDecimal) value).doubleValue();
+            if (isMathematicalInteger(d)) {
+                return (long) d;
+            }
+            return BigDecimal.valueOf(d);
+        }
+        return value;
     }
 
     private static boolean isMathematicalInteger(final double x) {
@@ -96,7 +89,7 @@ public class XlsxDataParser {
 
     private static boolean isEmptyRow(final Map<String, Object> row) {
         for (final Map.Entry<String, Object> entry : row.entrySet()) {
-            if (entry.getValue() != null && !entry.getValue().toString().equals("")) {
+            if (entry.getValue() != null && !entry.getValue().toString().isEmpty()) {
                 return false;
             }
         }

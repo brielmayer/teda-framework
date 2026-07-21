@@ -2,6 +2,7 @@ package com.brielmayer.teda.parser.ods;
 
 import com.brielmayer.teda.model.Header;
 import com.brielmayer.teda.model.Table;
+import com.brielmayer.teda.parser.Coord;
 import com.brielmayer.teda.parser.Parser;
 import com.github.miachm.sods.Sheet;
 
