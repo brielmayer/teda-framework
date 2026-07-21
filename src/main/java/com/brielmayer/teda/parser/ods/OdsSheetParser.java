@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class OdsSheetParser {
 
-    public static Sheet parseSheet(org.jopendocument.dom.spreadsheet.Sheet odsSheet) {
+    public static Sheet parseSheet(com.github.miachm.sods.Sheet odsSheet) {
         Map<String, Table> tables = OdsTableParser.parseTable(odsSheet);
         return Sheet.builder()
                 .name(odsSheet.getName())

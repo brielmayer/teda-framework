@@ -1,37 +1,26 @@
 package com.brielmayer.teda.parser.ods;
 
 import com.brielmayer.teda.model.Header;
-import org.jopendocument.dom.spreadsheet.Cell;
-import org.jopendocument.dom.spreadsheet.Sheet;
-import org.jopendocument.dom.spreadsheet.SpreadSheet;
-import org.jopendocument.util.Tuple2;
+import com.github.miachm.sods.Sheet;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class OdsHeaderParser {
 
-    public static List<Header> parseHeader(Sheet odsSheet, Tuple2<Integer, Integer> cellAddress) {
+    public static List<Header> parseHeader(Sheet odsSheet, Coord coord) {
         final List<Header> headers = new ArrayList<>();
+        final int maxCols = odsSheet.getMaxColumns();
+        final int headerRow = coord.row + 1;
 
-        for (byte c = 1; ; c++) {
-            try {
-                final Cell<SpreadSheet> cell = odsSheet.getCellAt(cellAddress.get0(), cellAddress.get1() + c);
-                if (cell != null) {
-                    final String headerName = cell.getTextValue();
-                    final Header header = Header.fromName(headerName);
-                    headers.add(header);
-                    continue;
-                }
-
+        for (int c = 1; coord.col + c < maxCols; c++) {
+            final Object value = odsSheet.getRange(headerRow, coord.col + c).getValue();
+            if (value == null) {
                 // if empty column is reached, break
                 break;
-            } catch (IndexOutOfBoundsException ignore) {
-                // end is reached
-                break;
             }
+            headers.add(Header.fromName(value.toString()));
         }
-
         return headers;
     }
 }

@@ -4,7 +4,7 @@ import com.brielmayer.teda.exception.TedaException;
 import com.brielmayer.teda.model.Document;
 import com.brielmayer.teda.model.Sheet;
 import com.brielmayer.teda.parser.Parser;
-import org.jopendocument.dom.spreadsheet.SpreadSheet;
+import com.github.miachm.sods.SpreadSheet;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,7 +21,7 @@ public class OdsDocumentParser implements Parser {
         final SpreadSheet spreadSheet;
         try {
             File file = getFileFromInputStream(inputStream);
-            spreadSheet = SpreadSheet.createFromFile(file);
+            spreadSheet = new SpreadSheet(file);
             file.deleteOnExit();
         } catch (final IOException e) {
             throw TedaException.builder()
@@ -31,10 +31,9 @@ public class OdsDocumentParser implements Parser {
         }
 
         Map<String, Sheet> sheets = new HashMap<>();
-        for (int i = 0; i < spreadSheet.getSheetCount(); i++) {
-            final org.jopendocument.dom.spreadsheet.Sheet odsSheet = spreadSheet.getSheet(i);
-            final String sheetName = odsSheet.getName();
-            sheets.put(sheetName, OdsSheetParser.parseSheet(odsSheet));
+        for (int i = 0; i < spreadSheet.getNumSheets(); i++) {
+            final com.github.miachm.sods.Sheet odsSheet = spreadSheet.getSheet(i);
+            sheets.put(odsSheet.getName(), OdsSheetParser.parseSheet(odsSheet));
         }
         return new Document(sheets);
     }
