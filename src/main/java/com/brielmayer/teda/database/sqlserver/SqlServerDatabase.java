@@ -18,12 +18,12 @@ public class SqlServerDatabase extends BaseDatabase {
 
     @Override
     public void truncateTable(String tableName) {
-        executeQuery("TRUNCATE TABLE %s;", tableName);
+        executeQuery("TRUNCATE TABLE " + tableName);
     }
 
     @Override
     public void dropTable(String tableName) {
-        executeQuery("DROP TABLE IF EXISTS %s;", tableName);
+        executeQuery("DROP TABLE IF EXISTS " + tableName);
     }
 
     @Override

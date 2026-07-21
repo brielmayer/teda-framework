@@ -1,12 +1,11 @@
 package com.brielmayer.teda.util;
 
 import lombok.experimental.UtilityClass;
+import org.apache.commons.io.IOUtils;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.stream.Collectors;
+import java.nio.charset.StandardCharsets;
 
 @UtilityClass
 public class ResourceReader {
@@ -21,10 +20,7 @@ public class ResourceReader {
             if (is == null) {
                 throw new IllegalArgumentException("File not found: " + fileName);
             }
-            try (InputStreamReader isr = new InputStreamReader(is);
-                 BufferedReader reader = new BufferedReader(isr)) {
-                return reader.lines().collect(Collectors.joining(System.lineSeparator()));
-            }
+            return IOUtils.toString(is, StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

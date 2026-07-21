@@ -4,23 +4,17 @@ import com.brielmayer.teda.database.BaseDatabase;
 import com.brielmayer.teda.database.DatabaseType;
 
 import javax.sql.DataSource;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 public class MySqlDatabaseType implements DatabaseType {
 
-    private static final Set<String> MYSQL_CLASS_NAMES = new HashSet<>(Collections.singletonList(
-            "com.mysql.cj.jdbc.MysqlDataSource"
-    ));
-
     @Override
-    public boolean handlesDataSource(DataSource dataSource) {
-        return MYSQL_CLASS_NAMES.contains(dataSource.getClass().getName());
+    public boolean handles(final String databaseProductName) {
+        return databaseProductName != null
+                && databaseProductName.toLowerCase().contains("mysql");
     }
 
     @Override
-    public BaseDatabase createDatabase(DataSource dataSource) {
+    public BaseDatabase createDatabase(final DataSource dataSource) {
         return new MySqlDatabase(dataSource);
     }
 }

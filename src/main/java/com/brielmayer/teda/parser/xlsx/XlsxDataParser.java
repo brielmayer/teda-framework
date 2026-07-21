@@ -52,23 +52,41 @@ public class XlsxDataParser {
             case STRING:
                 return cell.getRichStringCellValue().getString();
             case NUMERIC:
-                if (DateUtil.isCellDateFormatted(cell)) {
-                    // if cell is a date
-                    return cell.getDateCellValue();
-                } else if (isMathematicalInteger(cell.getNumericCellValue())) {
-                    // if cell is a int / long
-                    return (long) cell.getNumericCellValue();
-                } else {
-                    // else return double
-                    return cell.getNumericCellValue();
-                }
+                return getNumericValue(cell);
             case BOOLEAN:
                 return cell.getBooleanCellValue();
             case FORMULA:
-                return cell.getCellFormula();
+                // use the cached result of the formula, not the formula text itself
+                return getFormulaValue(cell);
             // BLANK or ERROR
             default:
                 return "";
+        }
+    }
+
+    private static Object getFormulaValue(final Cell cell) {
+        switch (cell.getCachedFormulaResultType()) {
+            case STRING:
+                return cell.getRichStringCellValue().getString();
+            case NUMERIC:
+                return getNumericValue(cell);
+            case BOOLEAN:
+                return cell.getBooleanCellValue();
+            default:
+                return "";
+        }
+    }
+
+    private static Object getNumericValue(final Cell cell) {
+        if (DateUtil.isCellDateFormatted(cell)) {
+            // if cell is a date
+            return cell.getDateCellValue();
+        } else if (isMathematicalInteger(cell.getNumericCellValue())) {
+            // if cell is a int / long
+            return (long) cell.getNumericCellValue();
+        } else {
+            // else return double
+            return cell.getNumericCellValue();
         }
     }
 

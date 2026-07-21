@@ -30,11 +30,35 @@ public final class TestHandler {
 
         // sort data
         final List<Header> primaryKeys = expectedTable.getHeaders().stream().filter(Header::isPrimaryKey).collect(Collectors.toList());
-        expectedTable.getData().sort(new SortComparator(primaryKeys));
-        actualTable.getData().sort(new SortComparator(primaryKeys));
+        final SortComparator comparator = new SortComparator(primaryKeys);
+        expectedTable.getData().sort(comparator);
+        actualTable.getData().sort(comparator);
+
+        // rows must be uniquely identifiable, otherwise the row-by-row comparison
+        // below can not reliably line expected and actual rows up
+        assertPrimaryKeysAreUnique(expectedTable, primaryKeys, comparator);
 
         // compare data
         compare(expectedTable, actualTable);
+    }
+
+    private static void assertPrimaryKeysAreUnique(final Table table, final List<Header> primaryKeys, final SortComparator comparator) {
+        if (primaryKeys.isEmpty()) {
+            return;
+        }
+
+        final List<Map<String, Object>> data = table.getData();
+        for (int i = 1; i < data.size(); i++) {
+            // data is already sorted, so duplicate keys are adjacent
+            if (comparator.compare(data.get(i - 1), data.get(i)) == 0) {
+                throw TedaException.builder()
+                        .appendMessage("Duplicate primary key in table %s", table.getName())
+                        .appendMessage("Rows %d and %d share the same primary key %s", i, i + 1, primaryKeys)
+                        .appendMessage("Row %d: %s", i, data.get(i - 1))
+                        .appendMessage("Row %d: %s", i + 1, data.get(i))
+                        .build();
+            }
+        }
     }
 
     private static void compare(final Table excelBean, final Table actualBean) {

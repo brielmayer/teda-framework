@@ -17,7 +17,10 @@ public class H2Test {
     void setup() {
         // Setup H2 database
         final JdbcDataSource dataSource = new JdbcDataSource();
-        dataSource.setURL("jdbc:h2:mem:test");
+        // DB_CLOSE_DELAY=-1 keeps the in-memory database alive for the lifetime of the
+        // JVM. Without it the database is dropped as soon as no connection is open, which
+        // now happens between statements because connections are closed properly.
+        dataSource.setURL("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
         dataSource.setUser("sa");
         dataSource.setPassword("");
 

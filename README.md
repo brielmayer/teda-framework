@@ -1,7 +1,274 @@
 # Teda Framework
-## Data-Driven Testing Framework based on Excel, OpenOffice, and CSV files
+
+**Data-driven database testing, described entirely in a spreadsheet.**
 
 ![Maven Workflow](https://github.com/brielmayer/teda-framework/actions/workflows/maven.yml/badge.svg)
 
+Teda lets you write database and data-pipeline tests as an Excel or OpenDocument
+spreadsheet instead of Java code. You describe **what data to load**, **what
+process to trigger**, and **what the result should look like** — Teda inserts the
+data, runs the process, reads the actual rows back, and compares them against your
+expectations. If anything differs, the test fails with a precise diff.
+
+It is particularly well suited for testing **ETL jobs, migrations, stored
+procedures, and reports**, where you often load into one database and verify the
+outcome in another.
+
+---
+
+## Table of Contents
+
+- [Why Teda?](#why-teda)
+- [Supported Databases](#supported-databases)
+- [Supported File Formats](#supported-file-formats)
+- [Getting Started](#getting-started)
+- [How It Works](#how-it-works)
+- [The Spreadsheet Layout](#the-spreadsheet-layout)
+- [Actions Reference](#actions-reference)
+- [Type Handling](#type-handling)
+- [Load vs. Test Database](#load-vs-test-database)
+- [Custom Execution Handlers](#custom-execution-handlers)
+- [Building from Source](#building-from-source)
+
+---
+
+## Why Teda?
+
+- **No boilerplate.** A tester or business analyst can express a full test case in
+  a spreadsheet — no JDBC, no assertion code.
+- **Readable test data.** Input and expected output live side by side in tabular
+  form, exactly how humans think about data.
+- **Database-agnostic comparisons.** Teda normalizes types (numbers, dates, UUIDs,
+  booleans) so the same test passes across MySQL, PostgreSQL, Oracle, and the rest —
+  even when the JDBC drivers return different Java types.
+- **Load here, verify there.** Use separate source and target databases to test
+  real ETL / migration flows in a single test file.
+
+---
+
 ## Supported Databases
-MySQL, PostgreSQL, MicrosoftS SQL Server, Oracle, MariaDB, H2
+
+| Database             | Auto-detected via JDBC |
+|----------------------|:----------------------:|
+| MySQL                | ✅ |
+| PostgreSQL           | ✅ |
+| Microsoft SQL Server | ✅ |
+| Oracle               | ✅ |
+| MariaDB              | ✅ |
+| H2                   | ✅ |
+
+The correct database implementation is resolved automatically from the
+`DataSource` using Java's `ServiceLoader` mechanism — you only provide a
+`javax.sql.DataSource`.
+
+## Supported File Formats
+
+| Format                   | Extension | Library        |
+|--------------------------|-----------|----------------|
+| Excel                    | `.xlsx`   | Apache POI     |
+| OpenDocument Spreadsheet | `.ods`    | jOpenDocument  |
+
+## Getting Started
+
+Teda is a Java 11 library built with Maven. Add it as a dependency (after building
+and installing it locally — see [Building from Source](#building-from-source)):
+
+```xml
+<dependency>
+    <groupId>com.brielmayer</groupId>
+    <artifactId>teda-framework</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+</dependency>
+```
+
+Then point Teda at a `DataSource` and a spreadsheet:
+
+```java
+import com.brielmayer.teda.Teda;
+
+// Single database: data is loaded and verified against the same source
+new Teda(dataSource)
+        .execute("src/test/resources/teda/STUDENT_TEST.xlsx");
+```
+
+A typical JUnit 5 test looks like this:
+
+```java
+class StudentTest {
+
+    private DataSource dataSource; // e.g. an H2 in-memory DataSource
+
+    @Test
+    void loadAndVerifyStudents() {
+        new Teda(dataSource)
+                .execute("teda/STUDENT_TEST.xlsx");
+    }
+}
+```
+
+The call throws a `TedaException` with a detailed message if the actual data does
+not match the expected data — plug it straight into any test framework.
+
+## How It Works
+
+Every Teda run is driven by a spreadsheet with a **Cockpit** sheet that orchestrates
+the run, plus additional sheets holding the actual data.
+
+```
+        ┌──────────────────────────────────────────────┐
+        │  Spreadsheet (.xlsx / .ods)                  │
+        │                                              │
+        │  ┌──────────────┐   reads / orchestrates     │
+        │  │  Cockpit     │───────────┐                │
+        │  │  #Teda table │           │                │
+        │  └──────────────┘           ▼                │
+        │       │            ┌──────────────┐          │
+        │       │            │ Data sheets  │          │
+        │       │            │ #Table ...   │          │
+        │       │            └──────────────┘          │
+        └───────┼──────────────────────────────────────┘
+                │
+                ▼   for each Cockpit row, in order:
+      ┌───────────────────────────────────────────────┐
+      │  TRUNCATE  → empty a table                    │
+      │  LOAD      → insert the sheet's rows          │
+      │  EXECUTE   → trigger your process (ETL, proc) │
+      │  TEST      → compare DB rows to expected rows │
+      └───────────────────────────────────────────────┘
+```
+
+1. **Parse** – The spreadsheet is read into an in-memory model of sheets and tables.
+2. **Cockpit** – The first table of the first sheet (`Cockpit`) is the control
+   panel. Each of its rows lists actions to perform.
+3. **Execute** – For each row, Teda runs the actions in the fixed order
+   `TRUNCATE → LOAD → EXECUTE → TEST`, using the cell value as the argument
+   (a table name, a sheet name, or a value passed to your handler).
+4. **Compare** – `TEST` reads the real rows from the database and compares them, row
+   by row, against the expected rows — after sorting both by their primary-key
+   columns and normalizing types.
+
+## The Spreadsheet Layout
+
+### 1. The Cockpit sheet
+
+The first sheet **must be named `Cockpit`** and contain a `#Teda` table. Its column
+headers are the [actions](#actions-reference); each row's cells reference the sheet
+or table the action applies to. Empty cells are skipped.
+
+| #Teda    | *(scenario)* |          |            |
+|----------|--------------|----------|------------|
+| TRUNCATE | LOAD         | EXECUTE  | TEST       |
+| STUDENT  | StudentInput | importJob| StudentExpected |
+
+> The `#Teda` marker cell is followed by a free-text name in the cell to its right.
+> The header row below defines which actions run; each data row is one scenario.
+
+### 2. Data sheets
+
+Any other sheet can hold one or more `#Table` blocks. A `#Table` marker is followed
+by the **target database table name**, then a header row of column names, then the
+data rows.
+
+Sheet `StudentInput` (data to load):
+
+| #Table | STUDENT |     |         |
+|--------|---------|-----|---------|
+| #id    | name    | age | average |
+| 1      | Alice   | 21  | 1.75    |
+| 2      | Bob     | 23  | 2.30    |
+
+Sheet `StudentExpected` (expected result):
+
+| #Table | STUDENT |     |         |
+|--------|---------|-----|---------|
+| #id    | name    | age | average |
+| 1      | Alice   | 21  | 1.75    |
+| 2      | Bob     | 23  | 2.30    |
+
+**Primary keys** are marked by prefixing the column name with `#` (e.g. `#id`).
+Teda sorts both expected and actual rows by these columns before comparing, so row
+order in the spreadsheet and in the database does not matter.
+
+## Actions Reference
+
+Each column header in the Cockpit's `#Teda` table is one of the following actions.
+Within a row they always execute in this order:
+
+| Action     | Cell value refers to        | Effect |
+|------------|-----------------------------|--------|
+| `TRUNCATE` | a database table name       | Empties the table in the **test** database before loading. |
+| `LOAD`     | a sheet name                | Inserts every `#Table` block on that sheet into the **load** database. |
+| `EXECUTE`  | any value                   | Passes the value to your [`ExecutionHandler`](#custom-execution-handlers) — trigger an ETL job, stored procedure, etc. |
+| `TEST`     | a sheet name                | Reads each `#Table` block's table from the **test** database and asserts it equals the expected rows. |
+
+## Type Handling
+
+Different JDBC drivers return different Java types for the same SQL value. Teda
+normalizes both the expected (spreadsheet) and actual (database) values before
+comparing, so tests stay portable across databases:
+
+- All integer and floating-point types (`Byte`, `Short`, `Integer`, `Long`,
+  `Float`, `Double`, `BigInteger`) are compared as `BigDecimal`.
+- `java.sql.Date` / `Time` / `Timestamp` become `LocalDate` / `LocalTime` /
+  `LocalDateTime`.
+- `Boolean` stays `Boolean`; `UUID` is compared as its `String` form.
+- Spreadsheet text is auto-detected: `true`/`false` → boolean, numeric strings →
+  `BigDecimal`, ISO date/time strings → the matching `java.time` type.
+
+## Load vs. Test Database
+
+For ETL and migration testing you can load into one database and verify in another.
+Provide two `DataSource`s plus an execution handler that triggers the process
+between them:
+
+```java
+new Teda(sourceDataSource, targetDataSource, new MyEtlExecutionHandler())
+        .execute("teda/MIGRATION_TEST.xlsx");
+```
+
+Here `LOAD` writes to the **source** database, `EXECUTE` runs your migration, and
+`TEST` verifies the rows that arrived in the **target** database. With a single
+`DataSource`, the load and test databases are the same.
+
+## Custom Execution Handlers
+
+The `EXECUTE` action delegates to an `ExecutionHandler`. The default
+`LogExecutionHandler` just logs the value; implement your own to kick off the real
+work — an ETL job, a stored procedure, a REST call, and so on:
+
+```java
+public class MyEtlExecutionHandler implements ExecutionHandler {
+    @Override
+    public void execute(String value) {
+        // 'value' is the cell content from the EXECUTE column,
+        // e.g. the name of the job to run
+        myEtlEngine.run(value);
+    }
+}
+```
+
+## Building from Source
+
+Requirements: **JDK 17 or newer** (tested on 17 and 21). No local Maven
+installation is needed — the project ships with the Maven Wrapper.
+
+```bash
+# Compile and run the full test suite
+./mvnw verify
+
+# Install to your local Maven repository
+./mvnw install
+```
+
+On Windows use `mvnw.cmd` instead of `./mvnw`.
+
+The test suite uses [Testcontainers](https://www.testcontainers.org/) to spin up
+real MySQL, PostgreSQL, Oracle, SQL Server, and MariaDB instances, so a running
+**Docker** daemon is required to execute the database integration tests. The H2
+tests run in-memory without Docker.
+
+---
+
+## License
+
+Licensed under the [Apache License, Version 2.0](LICENSE).

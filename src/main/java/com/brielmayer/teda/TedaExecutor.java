@@ -1,6 +1,7 @@
 package com.brielmayer.teda;
 
 import com.brielmayer.teda.database.BaseDatabase;
+import com.brielmayer.teda.exception.TedaException;
 import com.brielmayer.teda.handler.ExecutionHandler;
 import com.brielmayer.teda.handler.LoadHandler;
 import com.brielmayer.teda.handler.TestHandler;
@@ -11,6 +12,7 @@ import com.brielmayer.teda.model.Sheet;
 import com.brielmayer.teda.model.Table;
 import com.brielmayer.teda.parser.Parser;
 
+import java.util.Arrays;
 import java.util.Map;
 
 public class TedaExecutor {
@@ -47,7 +49,18 @@ public class TedaExecutor {
                     continue;
                 }
 
-                switch (Action.valueOf(header)) {
+                final Action action;
+                try {
+                    action = Action.valueOf(header);
+                } catch (final IllegalArgumentException e) {
+                    throw TedaException.builder()
+                            .appendMessage("Unknown cockpit action \"%s\"", header)
+                            .appendMessage("Valid actions are: %s", Arrays.toString(Action.values()))
+                            .cause(e)
+                            .build();
+                }
+
+                switch (action) {
                     case TRUNCATE:
                         TruncateHandler.truncate(testDatabase, value);
                         break;

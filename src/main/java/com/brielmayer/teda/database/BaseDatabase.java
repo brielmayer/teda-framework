@@ -2,56 +2,49 @@ package com.brielmayer.teda.database;
 
 import com.brielmayer.teda.model.Header;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.ResultSetHandler;
+import org.apache.commons.dbutils.handlers.MapListHandler;
 
 import javax.sql.DataSource;
-import java.sql.*;
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-@Getter
-@RequiredArgsConstructor
 public abstract class BaseDatabase {
 
+    // maps a ResultSet to a list of case-insensitive row maps (DbUtils' default
+    // BasicRowProcessor lower-cases column keys). DbUtils manages the
+    // connection/statement/resultset lifecycle around this handler.
+    private static final ResultSetHandler<List<Map<String, Object>>> MAP_LIST_HANDLER = new MapListHandler();
+
+    @Getter
     private final DataSource dataSource;
+    private final QueryRunner queryRunner;
+
+    protected BaseDatabase(final DataSource dataSource) {
+        this.dataSource = dataSource;
+        this.queryRunner = new QueryRunner(dataSource);
+    }
 
     public int executeQuery(final String query) {
-        try (final Statement statement = dataSource.getConnection().createStatement()) {
-            return statement.executeUpdate(query);
+        try {
+            return queryRunner.update(query);
         } catch (final SQLException e) {
             throw new RuntimeException(e); // TODO better exception handling
         }
     }
 
-    public int executeQuery(final String query, final String... params) {
-        return executeQuery(String.format(query, params));
-    }
-
     public List<Map<String, Object>> queryForList(final String query) {
-        final List<Map<String, Object>> result = new ArrayList<>();
-        try (final Statement statement = dataSource.getConnection().createStatement()) {
-            final ResultSet resultSet = statement.executeQuery(query);
-            while (resultSet.next()) {
-                result.add(ResultSetMapper.mapResultSet(resultSet));
-            }
-            return result;
+        try {
+            return queryRunner.query(query, MAP_LIST_HANDLER);
         } catch (final SQLException e) {
             throw new RuntimeException(e); // TODO better exception handling
         }
     }
 
     protected void executeRow(final String query, final Map<String, Object> row) throws SQLException {
-        try (final Connection connection = dataSource.getConnection()) {
-            try (final PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                int parameterIndex = 1;
-                for (final Map.Entry<String, Object> entry : row.entrySet()) {
-                    preparedStatement.setObject(parameterIndex, entry.getValue());
-                    parameterIndex++;
-                }
-                preparedStatement.executeUpdate();
-            }
-        }
+        queryRunner.update(query, row.values().toArray());
     }
 
     public abstract void truncateTable(String tableName);
