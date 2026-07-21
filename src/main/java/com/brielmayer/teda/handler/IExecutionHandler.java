@@ -1,6 +1,5 @@
 package com.brielmayer.teda.handler;
 
-public interface ExecutionHandler {
-
+public interface IExecutionHandler {
     void execute(String value);
 }

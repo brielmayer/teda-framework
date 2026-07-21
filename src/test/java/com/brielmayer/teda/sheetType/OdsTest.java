@@ -1,9 +1,9 @@
 package com.brielmayer.teda.sheetType;
 
 import com.brielmayer.teda.Teda;
+import com.brielmayer.teda.config.TedaConfiguration;
 import com.brielmayer.teda.database.BaseDatabase;
 import com.brielmayer.teda.database.DatabaseFactory;
-import com.brielmayer.teda.handler.impl.LogExecutionHandler;
 import com.brielmayer.teda.model.DocumentType;
 import com.brielmayer.teda.util.ResourceReader;
 import com.mysql.cj.jdbc.MysqlDataSource;
@@ -34,7 +34,11 @@ public class OdsTest {
     @Test
     void loadTestMySql8() {
         initializeDatabase(mySqlContainer8_0_31);
-        new Teda(database.getDataSource(), new LogExecutionHandler())
+        TedaConfiguration configuration = TedaConfiguration.builder()
+                .withDatabase(database.getDataSource())
+                .build();
+
+        new Teda(configuration)
                 .execute(ResourceReader.asInputStream("teda/LOAD_TEST.ods"), DocumentType.OPEN_DOCUMENT_SPREADSHEET);
     }
 }

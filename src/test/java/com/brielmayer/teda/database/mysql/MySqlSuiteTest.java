@@ -1,7 +1,7 @@
 package com.brielmayer.teda.database.mysql;
 
-import com.brielmayer.teda.handler.impl.LogExecutionHandler;
 import com.brielmayer.teda.Teda;
+import com.brielmayer.teda.config.TedaConfiguration;
 import com.brielmayer.teda.database.BaseDatabase;
 import com.brielmayer.teda.database.DatabaseFactory;
 import com.brielmayer.teda.model.DocumentType;
@@ -38,14 +38,22 @@ public class MySqlSuiteTest {
     @Test
     void loadTestMySql5() {
         initializeDatabase(mySqlContainer5_7_40);
-        new Teda(database.getDataSource(), new LogExecutionHandler())
+        TedaConfiguration configuration = TedaConfiguration.builder()
+                .withDatabase(database.getDataSource())
+                .build();
+
+        new Teda(configuration)
                 .execute(ResourceReader.asInputStream("teda/LOAD_TEST.xlsx"), DocumentType.EXCEL);
     }
 
     @Test
     void loadTestMySql8() {
         initializeDatabase(mySqlContainer8_0_31);
-        new Teda(database.getDataSource(), new LogExecutionHandler())
+        TedaConfiguration configuration = TedaConfiguration.builder()
+                .withDatabase(database.getDataSource())
+                .build();
+
+        new Teda(configuration)
                 .execute(ResourceReader.asInputStream("teda/LOAD_TEST.xlsx"), DocumentType.EXCEL);
     }
 }

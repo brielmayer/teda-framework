@@ -1,42 +1,25 @@
 package com.brielmayer.teda;
 
-import com.brielmayer.teda.database.BaseDatabase;
+import com.brielmayer.teda.config.TedaConfiguration;
 import com.brielmayer.teda.database.DatabaseFactory;
 import com.brielmayer.teda.exception.TedaException;
-import com.brielmayer.teda.handler.ExecutionHandler;
-import com.brielmayer.teda.handler.impl.LogExecutionHandler;
+import com.brielmayer.teda.executor.TedaExecutor;
 import com.brielmayer.teda.model.Document;
 import com.brielmayer.teda.model.DocumentType;
 import com.brielmayer.teda.parser.Parser;
 import com.brielmayer.teda.parser.ParserFactory;
+import lombok.RequiredArgsConstructor;
 
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+@RequiredArgsConstructor
 public class Teda {
 
-    private final BaseDatabase loadDatabase;
-    private final BaseDatabase testDatabase;
-
-    private final ExecutionHandler executionHandler;
-
-    public Teda(final DataSource dataSource) {
-        this(dataSource, dataSource, new LogExecutionHandler());
-    }
-
-    public Teda(final DataSource dataSource, final ExecutionHandler executionHandler) {
-        this(dataSource, dataSource, executionHandler);
-    }
-
-    public Teda(final DataSource loadDataSource, final DataSource testDataSource, final ExecutionHandler executionHandler) {
-        this.loadDatabase = DatabaseFactory.createDatabase(loadDataSource);
-        this.testDatabase = DatabaseFactory.createDatabase(testDataSource);
-        this.executionHandler = executionHandler;
-    }
+    private final TedaConfiguration configuration;
 
     public void execute(final String filePath) {
         execute(Paths.get(filePath));
@@ -55,7 +38,15 @@ public class Teda {
     }
 
     public void execute(final InputStream inputStream, DocumentType documentType) {
-        final TedaExecutor executor = new TedaExecutor(loadDatabase, testDatabase, executionHandler);
+        TedaExecutor executor = TedaExecutor.builder()
+                .loadDatabase(DatabaseFactory.createDatabase(configuration.getLoadDatabase()))
+                .testDatabase(DatabaseFactory.createDatabase(configuration.getTestDatabase()))
+                .truncateHandler(configuration.getTruncateHandler())
+                .loadHandler(configuration.getLoadHandler())
+                .executionHandler(configuration.getExecutionHandler())
+                .testHandler(configuration.getTestHandler())
+                .build();
+
         final Parser parser = ParserFactory.getParser(documentType);
         final Document document = parser.parse(inputStream);
         executor.execute(document);

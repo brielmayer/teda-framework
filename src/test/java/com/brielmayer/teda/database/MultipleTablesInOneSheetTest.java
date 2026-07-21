@@ -16,16 +16,12 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class DifferentDatabasesTest {
+public class MultipleTablesInOneSheetTest {
 
     @Container
     public static MySQLContainer<?> mySqlContainer = new MySQLContainer<>("mysql:8.0.31");
 
-    @Container
-    public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:15.1");
-
     private BaseDatabase mysqlDatabase;
-    private BaseDatabase postgresDatabase;
 
     @BeforeAll
     void setup() {
@@ -36,24 +32,15 @@ public class DifferentDatabasesTest {
         mysqlDataSource.setUser(mySqlContainer.getUsername());
         mysqlDatabase = DatabaseFactory.createDatabase(mysqlDataSource);
         mysqlDatabase.executeQuery(ResourceReader.asString("database/mysql/CREATE_TEST_TABLE.sql"));
-
-        // Setup PostgreSQL database
-        PGSimpleDataSource postgresDataSource = new PGSimpleDataSource();
-        postgresDataSource.setPassword(postgreSQLContainer.getPassword());
-        postgresDataSource.setUrl(postgreSQLContainer.getJdbcUrl());
-        postgresDataSource.setUser(postgreSQLContainer.getUsername());
-        postgresDatabase = DatabaseFactory.createDatabase(postgresDataSource);
-        postgresDatabase.executeQuery(ResourceReader.asString("database/postgres/CREATE_TEST_TABLE.sql"));
     }
 
     @Test
     void testWithTwoDifferentDatabaseTypes() {
         TedaConfiguration tedaConfiguration = TedaConfiguration.builder()
-                .withLoadDatabase(mysqlDatabase.getDataSource())
-                .withTestDatabase(postgresDatabase.getDataSource())
+                .withDatabase(mysqlDatabase.getDataSource())
                 .build();
 
         new Teda(tedaConfiguration)
-                .execute(ResourceReader.asInputStream("teda/DIFFERENT_DATABASE_TEST.xlsx"), DocumentType.EXCEL);
+                .execute(ResourceReader.asInputStream("teda/MULTIPLE_TABLES_IN_ONE_SHEET.xlsx"), DocumentType.EXCEL);
     }
 }
