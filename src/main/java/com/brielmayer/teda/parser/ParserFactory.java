@@ -1,19 +1,23 @@
 package com.brielmayer.teda.parser;
 
+import java.util.ServiceLoader;
+
+import com.brielmayer.teda.exception.TedaException;
 import com.brielmayer.teda.model.DocumentType;
-import com.brielmayer.teda.parser.ods.OdsDocumentParser;
-import com.brielmayer.teda.parser.xlsx.XlsxDocumentParser;
 
-public class ParserFactory {
+public final class ParserFactory {
 
-    public static Parser getParser(DocumentType documentType) {
-        switch (documentType) {
-            case EXCEL:
-                return new XlsxDocumentParser();
-            case OPEN_DOCUMENT_SPREADSHEET:
-                return new OdsDocumentParser();
-            default:
-                throw new IllegalArgumentException("Unsupported file type");
+    private ParserFactory() {}
+
+    public static Parser getParser(final DocumentType documentType) {
+        final ServiceLoader<ParserType> loader = ServiceLoader.load(ParserType.class);
+        for (final ParserType parserType : loader) {
+            if (parserType.handles(documentType)) {
+                return parserType.createParser();
+            }
         }
+        throw TedaException.builder()
+                .appendMessage("No parser found for document type \"%s\"", documentType)
+                .build();
     }
 }

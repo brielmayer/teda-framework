@@ -3,6 +3,7 @@ package com.brielmayer.teda.executor;
 import java.util.List;
 
 import com.brielmayer.teda.database.BaseDatabase;
+import com.brielmayer.teda.exception.TedaException;
 import com.brielmayer.teda.handler.IExecutionHandler;
 import com.brielmayer.teda.handler.ILoadHandler;
 import com.brielmayer.teda.handler.ITestHandler;
@@ -47,16 +48,34 @@ public class TedaExecutor {
                 truncateHandler.truncate(testDatabase, value);
                 break;
             case LOAD:
-                final Sheet loadSheet = document.getSheets().get(value);
-                loadSheet.getTables().values().forEach(table -> loadHandler.load(loadDatabase, table));
+                requireSheet(document, value, "LOAD")
+                        .getTables()
+                        .values()
+                        .forEach(table -> loadHandler.load(loadDatabase, table));
                 break;
             case EXECUTE:
                 executionHandler.execute(value);
                 break;
             case TEST:
-                final Sheet testSheet = document.getSheets().get(value);
-                testSheet.getTables().values().forEach(table -> testHandler.test(testDatabase, table));
+                requireSheet(document, value, "TEST")
+                        .getTables()
+                        .values()
+                        .forEach(table -> testHandler.test(testDatabase, table));
                 break;
+            default:
+                throw TedaException.builder()
+                        .appendMessage("Unhandled action: %s", command.getAction())
+                        .build();
         }
+    }
+
+    private static Sheet requireSheet(final Document document, final String name, final String action) {
+        final Sheet sheet = document.getSheets().get(name);
+        if (sheet == null) {
+            throw TedaException.builder()
+                    .appendMessage("%s action references unknown sheet \"%s\"", action, name)
+                    .build();
+        }
+        return sheet;
     }
 }

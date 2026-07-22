@@ -1,6 +1,7 @@
 package com.brielmayer.teda.parser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -17,7 +18,9 @@ public class TypeParserTest {
 
     @Test
     public void testNull() {
-        assertEquals("", TypeParser.parse(null));
+        // null is preserved through TypeParser; ObjectComparator and callers decide
+        // how null values relate to non-null ones during comparison.
+        assertNull(TypeParser.parse(null));
     }
 
     @Test

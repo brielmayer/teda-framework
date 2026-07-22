@@ -2,6 +2,7 @@ package com.brielmayer.teda.model;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class Table {
 
@@ -29,5 +30,20 @@ public class Table {
 
     public static TableBuilder builder() {
         return new TableBuilder();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Table)) return false;
+        final Table other = (Table) o;
+        return Objects.equals(name, other.name)
+                && Objects.equals(headers, other.headers)
+                && Objects.equals(data, other.data);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, headers, data);
     }
 }

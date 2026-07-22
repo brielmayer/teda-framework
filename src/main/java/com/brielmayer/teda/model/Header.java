@@ -1,5 +1,7 @@
 package com.brielmayer.teda.model;
 
+import java.util.Objects;
+
 public class Header {
 
     private static final String PRIMARY_KEY_PREFIX = "#";
@@ -26,5 +28,23 @@ public class Header {
         } else {
             return new Header(name, false);
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Header)) return false;
+        final Header other = (Header) o;
+        return isPrimaryKey == other.isPrimaryKey && Objects.equals(name, other.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, isPrimaryKey);
+    }
+
+    @Override
+    public String toString() {
+        return (isPrimaryKey ? "#" : "") + name;
     }
 }

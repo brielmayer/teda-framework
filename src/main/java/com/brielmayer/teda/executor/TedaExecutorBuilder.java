@@ -72,6 +72,18 @@ public final class TedaExecutorBuilder {
     }
 
     public TedaExecutor build() {
+        requireField(loadDatabase, "loadDatabase");
+        requireField(testDatabase, "testDatabase");
+        requireField(truncateHandler, "truncateHandler");
+        requireField(loadHandler, "loadHandler");
+        requireField(executionHandler, "executionHandler");
+        requireField(testHandler, "testHandler");
         return new TedaExecutor(this);
+    }
+
+    private static void requireField(final Object value, final String name) {
+        if (value == null) {
+            throw new IllegalStateException("TedaExecutorBuilder: " + name + " must be set before build()");
+        }
     }
 }

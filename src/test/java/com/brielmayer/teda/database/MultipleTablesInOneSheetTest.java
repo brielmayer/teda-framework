@@ -31,6 +31,7 @@ public class MultipleTablesInOneSheetTest {
         mysqlDataSource.setUser(mySqlContainer.getUsername());
         mysqlDatabase = DatabaseFactory.createDatabase(mysqlDataSource);
         mysqlDatabase.executeQuery(ResourceReader.asString("database/mysql/CREATE_TEST_TABLE.sql"));
+        mysqlDatabase.executeQuery(ResourceReader.asString("database/mysql/CREATE_TEST_TABLE_2.sql"));
     }
 
     @Test

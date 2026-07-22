@@ -21,11 +21,9 @@ public final class ObjectComparator {
         }
 
         if (!o1.getClass().equals(o2.getClass())) {
-            throw TedaException.builder()
-                    .appendMessage(
-                            "Types are not equal %s and %s with o1 = %s and o2 = %s",
-                            o1.getClass().getSimpleName(), o2.getClass().getSimpleName(), o1, o2)
-                    .build();
+            // Different concrete types cannot be equal; let the caller report
+            // the mismatch with row context instead of throwing here.
+            return false;
         }
 
         if (o1 instanceof String) {

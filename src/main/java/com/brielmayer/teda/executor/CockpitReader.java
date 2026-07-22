@@ -8,6 +8,7 @@ import java.util.Map;
 import com.brielmayer.teda.exception.TedaException;
 import com.brielmayer.teda.model.Action;
 import com.brielmayer.teda.model.Document;
+import com.brielmayer.teda.model.Sheet;
 import com.brielmayer.teda.model.Table;
 import com.brielmayer.teda.parser.Parser;
 
@@ -19,22 +20,27 @@ import com.brielmayer.teda.parser.Parser;
 final class CockpitReader {
 
     List<Command> read(final Document document) {
-        final Table cockpit = document.getSheets()
-                .get(Parser.COCKPIT)
-                .getTables()
-                .values()
-                .iterator()
-                .next();
+        final Table cockpit = extractCockpit(document);
 
         final List<Command> commands = new ArrayList<>();
         for (final Map<String, Object> row : cockpit.getData()) {
             for (final Map.Entry<String, Object> entry : row.entrySet()) {
-                // cockpit must only contain strings
                 final String header = entry.getKey();
-                final String value = (String) entry.getValue();
+                final Object rawValue = entry.getValue();
 
                 // if cell is empty, no action will be performed
-                if (value == null || value.isEmpty()) {
+                if (rawValue == null) {
+                    continue;
+                }
+                if (!(rawValue instanceof String)) {
+                    throw TedaException.builder()
+                            .appendMessage(
+                                    "Cockpit cell for action \"%s\" must be a string, got %s (%s)",
+                                    header, rawValue.getClass().getSimpleName(), rawValue)
+                            .build();
+                }
+                final String value = (String) rawValue;
+                if (value.isEmpty()) {
                     continue;
                 }
 
@@ -42,6 +48,24 @@ final class CockpitReader {
             }
         }
         return commands;
+    }
+
+    private static Table extractCockpit(final Document document) {
+        final Sheet cockpitSheet = document.getSheets().get(Parser.COCKPIT);
+        if (cockpitSheet == null) {
+            throw TedaException.builder()
+                    .appendMessage("Missing sheet \"%s\"", Parser.COCKPIT)
+                    .appendMessage(
+                            "The first sheet in the workbook must be named \"%s\" and contain a #Teda table.",
+                            Parser.COCKPIT)
+                    .build();
+        }
+        if (cockpitSheet.getTables() == null || cockpitSheet.getTables().isEmpty()) {
+            throw TedaException.builder()
+                    .appendMessage("Sheet \"%s\" contains no #Teda table", Parser.COCKPIT)
+                    .build();
+        }
+        return cockpitSheet.getTables().values().iterator().next();
     }
 
     private static Action parseAction(final String header) {

@@ -91,6 +91,14 @@ public final class TedaConfigurationBuilder implements IDatabase, ITestDatabase,
 
     @Override
     public TedaConfiguration build() {
+        // The staged interfaces (IDatabase, ITestDatabase) guarantee at compile
+        // time that at least one of withDatabase / withLoadDatabase+withTestDatabase
+        // was called. Runtime check remains as a defence against the impl being
+        // used directly, bypassing the interfaces.
+        if (loadDatabase == null || testDatabase == null) {
+            throw new IllegalStateException("TedaConfigurationBuilder: both load and test database must be set. "
+                    + "Use withDatabase(ds) or withLoadDatabase(ds).withTestDatabase(ds).");
+        }
         return new TedaConfiguration(this);
     }
 }

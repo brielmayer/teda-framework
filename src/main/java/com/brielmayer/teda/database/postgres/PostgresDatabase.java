@@ -19,21 +19,24 @@ public class PostgresDatabase extends BaseDatabase {
 
     @Override
     public void truncateTable(String tableName) {
+        validateIdentifier(tableName);
         executeQuery("TRUNCATE TABLE " + tableName);
     }
 
     @Override
     public void dropTable(String tableName) {
+        validateIdentifier(tableName);
         executeQuery("DROP TABLE IF EXISTS " + tableName);
     }
 
     @Override
     public void insertRow(String tableName, Map<String, Object> row) throws SQLException {
+        validateIdentifier(tableName);
+        validateIdentifiers(row.keySet());
         String query = "INSERT INTO %s(%s) VALUES (%s)";
 
         // "?" * header size
         List<String> placeHolder = Collections.nCopies(row.keySet().size(), "?");
-
         query = String.format(query, tableName, String.join(",", row.keySet()), String.join(",", placeHolder));
 
         executeRow(query, row);
@@ -41,8 +44,11 @@ public class PostgresDatabase extends BaseDatabase {
 
     @Override
     public List<Map<String, Object>> select(String tableName, List<Header> headers) {
+        validateIdentifier(tableName);
+        List<String> headerNames = headers.stream().map(Header::getName).collect(Collectors.toList());
+        validateIdentifiers(headerNames);
         String query = "SELECT %s FROM %s";
-        query = String.format(query, headers.stream().map(Header::getName).collect(Collectors.joining(",")), tableName);
+        query = String.format(query, String.join(",", headerNames), tableName);
         return queryForList(query);
     }
 }
