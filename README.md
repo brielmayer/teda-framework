@@ -315,14 +315,7 @@ mvn install
 The test suite uses [Testcontainers](https://www.testcontainers.org/) to spin up
 real MySQL, PostgreSQL, Oracle, SQL Server, and MariaDB instances, so a running
 **Docker** daemon is required to execute the database integration tests. The H2
-tests run in-memory without Docker.
-
-To publish a signed release to Maven Central, activate the `release` profile
-(requires a GPG key and Sonatype Central credentials):
-
-```bash
-mvn -Prelease clean deploy
-```
+tests run in-memory without Docker.Ja 
 
 ---
 
