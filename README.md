@@ -2,7 +2,7 @@
 
 **Data-driven database testing, described entirely in a spreadsheet.**
 
-![Maven Workflow](https://github.com/brielmayer/teda-framework/actions/workflows/maven.yml/badge.svg)
+![Maven Workflow](https://github.com/brielmayer/teda/actions/workflows/maven.yml/badge.svg)
 [![Maven Central](https://img.shields.io/maven-central/v/com.brielmayer.teda/teda?label=Maven%20Central)](https://central.sonatype.com/artifact/com.brielmayer.teda/teda)
 
 Teda lets you write database and data-pipeline tests as an Excel or OpenDocument

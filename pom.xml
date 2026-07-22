@@ -9,7 +9,7 @@
 
     <name>Teda Framework</name>
     <description>Data-driven database testing described entirely in a spreadsheet.</description>
-    <url>https://github.com/brielmayer/teda-framework</url>
+    <url>https://github.com/brielmayer/teda</url>
 
     <licenses>
         <license>
@@ -29,15 +29,15 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/brielmayer/teda-framework.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com:brielmayer/teda-framework.git</developerConnection>
+        <connection>scm:git:git://github.com/brielmayer/teda.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:brielmayer/teda.git</developerConnection>
         <tag>HEAD</tag>
-        <url>https://github.com/brielmayer/teda-framework</url>
+        <url>https://github.com/brielmayer/teda</url>
     </scm>
 
     <issueManagement>
         <system>GitHub Issues</system>
-        <url>https://github.com/brielmayer/teda-framework/issues</url>
+        <url>https://github.com/brielmayer/teda/issues</url>
     </issueManagement>
 
     <properties>
