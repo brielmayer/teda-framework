@@ -1,16 +1,14 @@
 package com.brielmayer.teda.database;
 
 import com.brielmayer.teda.Teda;
-import com.brielmayer.teda.config.TedaConfiguration;
+import com.brielmayer.teda.configuration.TedaConfiguration;
 import com.brielmayer.teda.model.DocumentType;
 import com.brielmayer.teda.util.ResourceReader;
 import com.mysql.cj.jdbc.MysqlDataSource;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.postgresql.ds.PGSimpleDataSource;
 import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 

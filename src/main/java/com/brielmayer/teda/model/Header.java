@@ -1,17 +1,24 @@
 package com.brielmayer.teda.model;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-@Getter
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class Header {
 
     private static final String PRIMARY_KEY_PREFIX = "#";
 
     private final String name;
     private final boolean isPrimaryKey;
+
+    private Header(final String name, final boolean isPrimaryKey) {
+        this.name = name;
+        this.isPrimaryKey = isPrimaryKey;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean isPrimaryKey() {
+        return isPrimaryKey;
+    }
 
     public static Header fromName(String name) {
         if (name.startsWith(PRIMARY_KEY_PREFIX)) {

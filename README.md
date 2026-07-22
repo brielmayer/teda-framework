@@ -86,15 +86,19 @@ Point Teda at a `DataSource` and a spreadsheet via the fluent
 `TedaConfiguration` builder:
 
 ```java
-import com.brielmayer.teda.Teda;
-import com.brielmayer.teda.config.TedaConfiguration;
+
+import com.brielmayer.teda.configuration.TedaConfiguration;
 
 TedaConfiguration configuration = TedaConfiguration.builder()
         .withDatabase(dataSource)
         .build();
 
-new Teda(configuration)
-        .execute("src/test/resources/teda/STUDENT_TEST.xlsx");
+new
+
+Teda(configuration)
+        .
+
+execute("src/test/resources/teda/STUDENT_TEST.xlsx");
 ```
 
 A typical JUnit 5 test looks like this:

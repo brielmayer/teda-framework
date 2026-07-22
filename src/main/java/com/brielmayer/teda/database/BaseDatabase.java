@@ -1,7 +1,6 @@
 package com.brielmayer.teda.database;
 
 import com.brielmayer.teda.model.Header;
-import lombok.Getter;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.MapListHandler;
@@ -18,13 +17,16 @@ public abstract class BaseDatabase {
     // connection/statement/resultset lifecycle around this handler.
     private static final ResultSetHandler<List<Map<String, Object>>> MAP_LIST_HANDLER = new MapListHandler();
 
-    @Getter
     private final DataSource dataSource;
     private final QueryRunner queryRunner;
 
     protected BaseDatabase(final DataSource dataSource) {
         this.dataSource = dataSource;
         this.queryRunner = new QueryRunner(dataSource);
+    }
+
+    public DataSource getDataSource() {
+        return dataSource;
     }
 
     public int executeQuery(final String query) {

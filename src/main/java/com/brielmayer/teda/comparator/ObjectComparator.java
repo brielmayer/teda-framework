@@ -10,11 +10,21 @@ import java.time.LocalTime;
 
 public final class ObjectComparator {
 
-    public static boolean compare(final Object o1, final Object o2) {
+    private ObjectComparator() {
+    }
 
-        if (!o1.getClass().getSimpleName().equals(o2.getClass().getSimpleName())) {
+    public static boolean compare(final Object o1, final Object o2) {
+        if (o1 == null && o2 == null) {
+            return true;
+        }
+        if (o1 == null || o2 == null) {
+            return false;
+        }
+
+        if (!o1.getClass().equals(o2.getClass())) {
             throw TedaException.builder()
-                    .appendMessage("Types are not equal %s and %s with o1 = %s and o2 = %s", o1.getClass().getSimpleName(), o2.getClass().getSimpleName(), o1.toString(), o2.toString())
+                    .appendMessage("Types are not equal %s and %s with o1 = %s and o2 = %s",
+                            o1.getClass().getSimpleName(), o2.getClass().getSimpleName(), o1, o2)
                     .build();
         }
 
@@ -23,30 +33,25 @@ public final class ObjectComparator {
         }
 
         if (o1 instanceof Boolean) {
-            return ((boolean) o1) == ((boolean) o2);
+            return o1.equals(o2);
         }
 
-        // java.sql.Date
         if (o1 instanceof LocalDate) {
             return ((LocalDate) o1).isEqual((LocalDate) o2);
         }
 
-        // java.sql.Timestamp
         if (o1 instanceof LocalDateTime) {
             return ((LocalDateTime) o1).isEqual((LocalDateTime) o2);
         }
 
-        // java.sql.Time
         if (o1 instanceof LocalTime) {
             return o1.equals(o2);
         }
 
-        // java.math.BigInteger
         if (o1 instanceof BigInteger) {
             return o1.equals(o2);
         }
 
-        // java.math.BigDecimal
         if (o1 instanceof BigDecimal) {
             return ((BigDecimal) o1).compareTo((BigDecimal) o2) == 0;
         }

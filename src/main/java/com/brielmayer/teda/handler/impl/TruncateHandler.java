@@ -2,10 +2,12 @@ package com.brielmayer.teda.handler.impl;
 
 import com.brielmayer.teda.database.BaseDatabase;
 import com.brielmayer.teda.handler.ITruncateHandler;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
 public final class TruncateHandler implements ITruncateHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(TruncateHandler.class);
 
     public void truncate(final BaseDatabase database, final String tableName) {
         log.info("Truncate table: {}", tableName);

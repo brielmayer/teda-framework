@@ -4,13 +4,15 @@ import com.brielmayer.teda.database.BaseDatabase;
 import com.brielmayer.teda.exception.TedaException;
 import com.brielmayer.teda.handler.ILoadHandler;
 import com.brielmayer.teda.model.Table;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.Map;
 
-@Slf4j
 public final class LoadHandler implements ILoadHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(LoadHandler.class);
 
     public void load(final BaseDatabase database, final Table table) {
         log.info("Load table: {}", table.getName());

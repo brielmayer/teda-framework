@@ -1,7 +1,7 @@
 package com.brielmayer.teda.sheetType;
 
 import com.brielmayer.teda.Teda;
-import com.brielmayer.teda.config.TedaConfiguration;
+import com.brielmayer.teda.configuration.TedaConfiguration;
 import com.brielmayer.teda.database.BaseDatabase;
 import com.brielmayer.teda.database.DatabaseFactory;
 import com.brielmayer.teda.model.DocumentType;

@@ -3,7 +3,6 @@ package com.brielmayer.teda.comparator;
 import com.brielmayer.teda.exception.TedaException;
 import com.brielmayer.teda.model.Header;
 import com.brielmayer.teda.parser.TypeParser;
-import lombok.RequiredArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Comparator;
@@ -18,12 +17,15 @@ import java.util.Map;
  * consistent even when the expected (spreadsheet) and actual (database) rows use
  * different Java types for the same column (e.g. {@code Long} vs. {@code BigDecimal}).
  */
-@RequiredArgsConstructor
 public class SortComparator implements Comparator<Map<String, Object>>, Serializable {
 
     private static final long serialVersionUID = 6561977888664706224L;
 
     private final List<Header> primaryKeys;
+
+    public SortComparator(final List<Header> primaryKeys) {
+        this.primaryKeys = primaryKeys;
+    }
 
     @Override
     public int compare(final Map<String, Object> o1, final Map<String, Object> o2) {
@@ -47,6 +49,15 @@ public class SortComparator implements Comparator<Map<String, Object>>, Serializ
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static int compareValues(final String column, final Object value1, final Object value2) {
+        // a null primary key would break row alignment; reject early with a
+        // clear message rather than throwing NullPointerException below
+        if (value1 == null || value2 == null) {
+            throw TedaException.builder()
+                    .appendMessage("Unable to sort data")
+                    .appendMessage("Primary key \"%s\" contains null", column)
+                    .build();
+        }
+
         // within a single list the same column always yields the same type;
         // a mismatch means the primary key holds inconsistent data
         if (!value1.getClass().equals(value2.getClass())) {

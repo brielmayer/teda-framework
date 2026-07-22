@@ -8,7 +8,6 @@ import com.brielmayer.teda.handler.ITestHandler;
 import com.brielmayer.teda.model.Header;
 import com.brielmayer.teda.model.Table;
 import com.brielmayer.teda.parser.TypeParser;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,8 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Slf4j
 public final class TestHandler implements ITestHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(TestHandler.class);
 
     public void test(final BaseDatabase database, final Table expectedTable) {
 
@@ -93,13 +93,17 @@ public final class TestHandler implements ITestHandler {
                 if (!ObjectComparator.compare(actualValue, expectedValue)) {
                     throw TedaException.builder()
                             .appendMessage("Error comparing Table %s in row %d", excelBean.getName(), rowCount + 1)
-                            .appendMessage("Column %s: Expected (%s) \"%s\" != Actual (%s) \"%s\"", key, expectedValue.getClass().getSimpleName(), expectedValue, actualValue.getClass().getSimpleName(), actualValue)
+                            .appendMessage("Column %s: Expected (%s) \"%s\" != Actual (%s) \"%s\"", key, typeName(expectedValue), expectedValue, typeName(actualValue), actualValue)
                             .appendMessage("Expected Row:  %s", expectedRow.toString())
                             .appendMessage("Actual Row:    %s", actualRow.toString())
                             .build();
                 }
             }
         }
+    }
+
+    private static String typeName(final Object value) {
+        return value == null ? "null" : value.getClass().getSimpleName();
     }
 
     // only used in case of an exception

@@ -1,19 +1,23 @@
 package com.brielmayer.teda.model;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 
 import java.nio.file.Path;
 import java.util.Arrays;
 
-@Getter
-@RequiredArgsConstructor
 public enum DocumentType {
     EXCEL("xlsx"),
     OPEN_DOCUMENT_SPREADSHEET("ods");
 
     private final String extension;
+
+    DocumentType(final String extension) {
+        this.extension = extension;
+    }
+
+    public String getExtension() {
+        return extension;
+    }
 
     public static DocumentType fromPath(Path path) {
         return fromFileExtension(FilenameUtils.getExtension(path.toString()));
