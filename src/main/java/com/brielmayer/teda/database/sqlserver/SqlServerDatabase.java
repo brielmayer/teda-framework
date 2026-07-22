@@ -1,14 +1,15 @@
 package com.brielmayer.teda.database.sqlserver;
 
-import com.brielmayer.teda.database.BaseDatabase;
-import com.brielmayer.teda.model.Header;
-
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import javax.sql.DataSource;
+
+import com.brielmayer.teda.database.BaseDatabase;
+import com.brielmayer.teda.model.Header;
 
 public class SqlServerDatabase extends BaseDatabase {
 

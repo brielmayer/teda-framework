@@ -1,9 +1,9 @@
 package com.brielmayer.teda.model;
 
-import org.apache.commons.io.FilenameUtils;
-
 import java.nio.file.Path;
 import java.util.Arrays;
+
+import org.apache.commons.io.FilenameUtils;
 
 public enum DocumentType {
     EXCEL("xlsx"),

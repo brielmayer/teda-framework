@@ -1,11 +1,11 @@
 package com.brielmayer.teda.parser.ods;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.brielmayer.teda.model.Header;
 import com.brielmayer.teda.parser.Coord;
 import com.github.miachm.sods.Sheet;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class OdsHeaderParser {
 

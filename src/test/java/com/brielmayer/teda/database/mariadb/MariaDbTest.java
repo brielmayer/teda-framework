@@ -1,11 +1,7 @@
 package com.brielmayer.teda.database.mariadb;
 
-import com.brielmayer.teda.Teda;
-import com.brielmayer.teda.configuration.TedaConfiguration;
-import com.brielmayer.teda.database.BaseDatabase;
-import com.brielmayer.teda.database.DatabaseFactory;
-import com.brielmayer.teda.model.DocumentType;
-import com.brielmayer.teda.util.ResourceReader;
+import java.sql.SQLException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mariadb.jdbc.MariaDbDataSource;
@@ -13,7 +9,12 @@ import org.testcontainers.containers.MariaDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.sql.SQLException;
+import com.brielmayer.teda.Teda;
+import com.brielmayer.teda.configuration.TedaConfiguration;
+import com.brielmayer.teda.database.BaseDatabase;
+import com.brielmayer.teda.database.DatabaseFactory;
+import com.brielmayer.teda.model.DocumentType;
+import com.brielmayer.teda.util.ResourceReader;
 
 @Testcontainers
 public class MariaDbTest {
@@ -41,7 +42,6 @@ public class MariaDbTest {
                 .withDatabase(database.getDataSource())
                 .build();
 
-        new Teda(configuration)
-                .execute(ResourceReader.asInputStream("teda/LOAD_TEST.xlsx"), DocumentType.EXCEL);
+        new Teda(configuration).execute(ResourceReader.asInputStream("teda/LOAD_TEST.xlsx"), DocumentType.EXCEL);
     }
 }

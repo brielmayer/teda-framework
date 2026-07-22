@@ -1,14 +1,16 @@
 package com.brielmayer.teda.database;
 
-import com.brielmayer.teda.model.Header;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
+
+import javax.sql.DataSource;
+
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
+import com.brielmayer.teda.model.Header;
 
 public abstract class BaseDatabase {
 

@@ -1,15 +1,14 @@
 package com.brielmayer.teda.util;
 
-import org.apache.commons.io.IOUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
+import org.apache.commons.io.IOUtils;
+
 public final class ResourceReader {
 
-    private ResourceReader() {
-    }
+    private ResourceReader() {}
 
     public static InputStream asInputStream(String fileName) {
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();

@@ -16,15 +16,12 @@ public class TedaException extends RuntimeException {
         private Exception cause;
 
         public TedaExceptionBuilder appendMessage() {
-            this.message
-                    .append(System.lineSeparator());
+            this.message.append(System.lineSeparator());
             return this;
         }
 
         public TedaExceptionBuilder appendMessage(final String message, final Object... params) {
-            this.message
-                    .append(System.lineSeparator())
-                    .append(String.format(message, params));
+            this.message.append(System.lineSeparator()).append(String.format(message, params));
             return this;
         }
 

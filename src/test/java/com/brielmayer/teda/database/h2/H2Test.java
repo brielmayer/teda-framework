@@ -1,14 +1,15 @@
 package com.brielmayer.teda.database.h2;
 
+import org.h2.jdbcx.JdbcDataSource;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.brielmayer.teda.Teda;
 import com.brielmayer.teda.configuration.TedaConfiguration;
 import com.brielmayer.teda.database.BaseDatabase;
 import com.brielmayer.teda.database.DatabaseFactory;
 import com.brielmayer.teda.model.DocumentType;
 import com.brielmayer.teda.util.ResourceReader;
-import org.h2.jdbcx.JdbcDataSource;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 public class H2Test {
 
@@ -36,7 +37,6 @@ public class H2Test {
                 .withDatabase(database.getDataSource())
                 .build();
 
-        new Teda(configuration)
-                .execute(ResourceReader.asInputStream("teda/LOAD_TEST.xlsx"), DocumentType.EXCEL);
+        new Teda(configuration).execute(ResourceReader.asInputStream("teda/LOAD_TEST.xlsx"), DocumentType.EXCEL);
     }
 }

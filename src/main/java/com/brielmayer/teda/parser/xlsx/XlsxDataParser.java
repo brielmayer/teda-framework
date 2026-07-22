@@ -1,17 +1,18 @@
 package com.brielmayer.teda.parser.xlsx;
 
-import com.brielmayer.teda.model.Header;
-import com.brielmayer.teda.parser.Coord;
-import org.dhatim.fastexcel.reader.Cell;
-import org.dhatim.fastexcel.reader.CellType;
-import org.dhatim.fastexcel.reader.Row;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.dhatim.fastexcel.reader.Cell;
+import org.dhatim.fastexcel.reader.CellType;
+import org.dhatim.fastexcel.reader.Row;
+
+import com.brielmayer.teda.model.Header;
+import com.brielmayer.teda.parser.Coord;
 
 public class XlsxDataParser {
 
@@ -56,7 +57,7 @@ public class XlsxDataParser {
                 return unwrap(cell.getValue());
             case BOOLEAN:
                 return cell.asBoolean();
-            // EMPTY, ERROR
+                // EMPTY, ERROR
             default:
                 return "";
         }

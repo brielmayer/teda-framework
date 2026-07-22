@@ -1,18 +1,20 @@
 package com.brielmayer.teda.database;
 
-import com.brielmayer.teda.database.h2.H2Database;
-import com.brielmayer.teda.exception.TedaException;
-import org.h2.jdbcx.JdbcDataSource;
-import org.junit.jupiter.api.Test;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+
+import javax.sql.DataSource;
+
+import org.h2.jdbcx.JdbcDataSource;
+import org.junit.jupiter.api.Test;
+
+import com.brielmayer.teda.database.h2.H2Database;
+import com.brielmayer.teda.exception.TedaException;
 
 public class DatabaseFactoryTest {
 

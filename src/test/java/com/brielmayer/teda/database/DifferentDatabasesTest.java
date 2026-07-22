@@ -1,10 +1,5 @@
 package com.brielmayer.teda.database;
 
-import com.brielmayer.teda.Teda;
-import com.brielmayer.teda.configuration.TedaConfiguration;
-import com.brielmayer.teda.model.DocumentType;
-import com.brielmayer.teda.util.ResourceReader;
-import com.mysql.cj.jdbc.MysqlDataSource;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -13,6 +8,12 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
+import com.brielmayer.teda.Teda;
+import com.brielmayer.teda.configuration.TedaConfiguration;
+import com.brielmayer.teda.model.DocumentType;
+import com.brielmayer.teda.util.ResourceReader;
+import com.mysql.cj.jdbc.MysqlDataSource;
 
 @Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

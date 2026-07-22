@@ -15,8 +15,7 @@ public final class TedaExecutorBuilder {
     private IExecutionHandler executionHandler;
     private ITestHandler testHandler;
 
-    TedaExecutorBuilder() {
-    }
+    TedaExecutorBuilder() {}
 
     public TedaExecutorBuilder loadDatabase(final BaseDatabase loadDatabase) {
         this.loadDatabase = loadDatabase;

@@ -1,5 +1,7 @@
 package com.brielmayer.teda.configuration;
 
+import javax.sql.DataSource;
+
 import com.brielmayer.teda.handler.IExecutionHandler;
 import com.brielmayer.teda.handler.ILoadHandler;
 import com.brielmayer.teda.handler.ITestHandler;
@@ -8,8 +10,6 @@ import com.brielmayer.teda.handler.impl.LoadHandler;
 import com.brielmayer.teda.handler.impl.LogExecutionHandler;
 import com.brielmayer.teda.handler.impl.TestHandler;
 import com.brielmayer.teda.handler.impl.TruncateHandler;
-
-import javax.sql.DataSource;
 
 public final class TedaConfigurationBuilder implements IDatabase, ITestDatabase, IBuild {
 
@@ -20,8 +20,7 @@ public final class TedaConfigurationBuilder implements IDatabase, ITestDatabase,
     private IExecutionHandler executionHandler = new LogExecutionHandler();
     private ITestHandler testHandler = new TestHandler();
 
-    TedaConfigurationBuilder() {
-    }
+    TedaConfigurationBuilder() {}
 
     @Override
     public IBuild withDatabase(final DataSource val) {

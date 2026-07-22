@@ -1,6 +1,6 @@
 package com.brielmayer.teda.parser;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 public class TypeParserTest {
 
@@ -112,7 +112,6 @@ public class TypeParserTest {
         assertEquals(BigDecimal.valueOf(2.123456789d), TypeParser.parse(2.123456789d));
         assertEquals(BigDecimal.valueOf(10.00000001d), TypeParser.parse(10.00000001d));
         assertEquals(BigDecimal.valueOf(223343.5654645d), TypeParser.parse(223343.5654645d));
-
     }
 
     @Test
@@ -144,5 +143,4 @@ public class TypeParserTest {
     public void testString() {
         assertEquals("Hello", TypeParser.parse("Hello"));
     }
-
 }

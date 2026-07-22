@@ -1,12 +1,13 @@
 package com.brielmayer.teda.parser.xlsx;
 
-import com.brielmayer.teda.model.Header;
-import com.brielmayer.teda.parser.Coord;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.dhatim.fastexcel.reader.Cell;
 import org.dhatim.fastexcel.reader.Row;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.brielmayer.teda.model.Header;
+import com.brielmayer.teda.parser.Coord;
 
 public class XlsxHeaderParser {
 

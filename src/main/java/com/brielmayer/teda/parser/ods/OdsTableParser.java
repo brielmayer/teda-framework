@@ -1,16 +1,16 @@
 package com.brielmayer.teda.parser.ods;
 
-import com.brielmayer.teda.model.Header;
-import com.brielmayer.teda.model.Table;
-import com.brielmayer.teda.parser.Coord;
-import com.brielmayer.teda.parser.Parser;
-import com.github.miachm.sods.Sheet;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+
+import com.brielmayer.teda.model.Header;
+import com.brielmayer.teda.model.Table;
+import com.brielmayer.teda.parser.Coord;
+import com.brielmayer.teda.parser.Parser;
+import com.github.miachm.sods.Sheet;
 
 public class OdsTableParser {
 
@@ -27,11 +27,7 @@ public class OdsTableParser {
         final List<Header> headers = OdsHeaderParser.parseHeader(odsSheet, coord);
         final List<Map<String, Object>> data = OdsDataParser.parseData(odsSheet, coord);
 
-        return Table.builder()
-                .name(tableName)
-                .headers(headers)
-                .data(data)
-                .build();
+        return Table.builder().name(tableName).headers(headers).data(data).build();
     }
 
     private static String parseTableName(Sheet odsSheet, Coord coord) {

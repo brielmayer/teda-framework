@@ -9,8 +9,7 @@ public final class TableBuilder {
     private List<Header> headers;
     private List<Map<String, Object>> data;
 
-    TableBuilder() {
-    }
+    TableBuilder() {}
 
     public TableBuilder name(final String name) {
         this.name = name;

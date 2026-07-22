@@ -1,5 +1,12 @@
 package com.brielmayer.teda.handler.impl;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.brielmayer.teda.comparator.ObjectComparator;
 import com.brielmayer.teda.comparator.SortComparator;
 import com.brielmayer.teda.database.BaseDatabase;
@@ -8,12 +15,6 @@ import com.brielmayer.teda.handler.ITestHandler;
 import com.brielmayer.teda.model.Header;
 import com.brielmayer.teda.model.Table;
 import com.brielmayer.teda.parser.TypeParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public final class TestHandler implements ITestHandler {
 
@@ -30,7 +31,8 @@ public final class TestHandler implements ITestHandler {
         log.info("Test table: {}", expectedTable.getName());
 
         // sort data
-        final List<Header> primaryKeys = expectedTable.getHeaders().stream().filter(Header::isPrimaryKey).collect(Collectors.toList());
+        final List<Header> primaryKeys =
+                expectedTable.getHeaders().stream().filter(Header::isPrimaryKey).collect(Collectors.toList());
         final SortComparator comparator = new SortComparator(primaryKeys);
         expectedTable.getData().sort(comparator);
         actualTable.getData().sort(comparator);
@@ -43,7 +45,8 @@ public final class TestHandler implements ITestHandler {
         compare(expectedTable, actualTable);
     }
 
-    private static void assertPrimaryKeysAreUnique(final Table table, final List<Header> primaryKeys, final SortComparator comparator) {
+    private static void assertPrimaryKeysAreUnique(
+            final Table table, final List<Header> primaryKeys, final SortComparator comparator) {
         if (primaryKeys.isEmpty()) {
             return;
         }
@@ -68,8 +71,10 @@ public final class TestHandler implements ITestHandler {
             throw TedaException.builder()
                     .appendMessage("Failed to compare data for bean %s", excelBean.getName())
                     .appendMessage("Number of rows are not equal")
-                    .appendMessage("Expected number of rows: %d", excelBean.getData().size())
-                    .appendMessage("Actual number of rows: %d", actualBean.getData().size())
+                    .appendMessage(
+                            "Expected number of rows: %d", excelBean.getData().size())
+                    .appendMessage(
+                            "Actual number of rows: %d", actualBean.getData().size())
                     .appendMessage()
                     .appendMessage("Actual:")
                     .appendMessage("%s", listToString(actualBean.getData()))
@@ -93,7 +98,9 @@ public final class TestHandler implements ITestHandler {
                 if (!ObjectComparator.compare(actualValue, expectedValue)) {
                     throw TedaException.builder()
                             .appendMessage("Error comparing Table %s in row %d", excelBean.getName(), rowCount + 1)
-                            .appendMessage("Column %s: Expected (%s) \"%s\" != Actual (%s) \"%s\"", key, typeName(expectedValue), expectedValue, typeName(actualValue), actualValue)
+                            .appendMessage(
+                                    "Column %s: Expected (%s) \"%s\" != Actual (%s) \"%s\"",
+                                    key, typeName(expectedValue), expectedValue, typeName(actualValue), actualValue)
                             .appendMessage("Expected Row:  %s", expectedRow.toString())
                             .appendMessage("Actual Row:    %s", actualRow.toString())
                             .build();
@@ -114,5 +121,4 @@ public final class TestHandler implements ITestHandler {
         }
         return retVal.toString();
     }
-
 }

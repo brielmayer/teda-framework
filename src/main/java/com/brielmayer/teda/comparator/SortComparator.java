@@ -1,13 +1,13 @@
 package com.brielmayer.teda.comparator;
 
-import com.brielmayer.teda.exception.TedaException;
-import com.brielmayer.teda.model.Header;
-import com.brielmayer.teda.parser.TypeParser;
-
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+
+import com.brielmayer.teda.exception.TedaException;
+import com.brielmayer.teda.model.Header;
+import com.brielmayer.teda.parser.TypeParser;
 
 /**
  * Sorts rows by their primary key columns, in the order the keys are given.
@@ -64,7 +64,8 @@ public class SortComparator implements Comparator<Map<String, Object>>, Serializ
             throw TedaException.builder()
                     .appendMessage("Unable to sort data")
                     .appendMessage("Data types are not equal within primary key \"%s\"", column)
-                    .appendMessage("Can not compare \"%s\" with \"%s\"",
+                    .appendMessage(
+                            "Can not compare \"%s\" with \"%s\"",
                             value1.getClass().getSimpleName(), value2.getClass().getSimpleName())
                     .build();
         }
@@ -72,7 +73,8 @@ public class SortComparator implements Comparator<Map<String, Object>>, Serializ
         if (!(value1 instanceof Comparable)) {
             throw TedaException.builder()
                     .appendMessage("Unable to sort data")
-                    .appendMessage("Primary key \"%s\" of type %s is not comparable",
+                    .appendMessage(
+                            "Primary key \"%s\" of type %s is not comparable",
                             column, value1.getClass().getSimpleName())
                     .build();
         }

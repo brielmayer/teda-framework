@@ -14,8 +14,7 @@ public final class TypeParser {
     private static final TypeNormalizer JDBC = new JdbcTypeNormalizer();
     private static final TypeNormalizer STRING = new SpreadsheetStringDetector();
 
-    private TypeParser() {
-    }
+    private TypeParser() {}
 
     public static Object parse(final Object value) {
         return STRING.normalize(JDBC.normalize(value));

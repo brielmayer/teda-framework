@@ -1,17 +1,18 @@
 package com.brielmayer.teda.database.postgres;
 
-import com.brielmayer.teda.Teda;
-import com.brielmayer.teda.configuration.TedaConfiguration;
-import com.brielmayer.teda.database.BaseDatabase;
-import com.brielmayer.teda.database.DatabaseFactory;
-import com.brielmayer.teda.model.DocumentType;
-import com.brielmayer.teda.util.ResourceReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
+import com.brielmayer.teda.Teda;
+import com.brielmayer.teda.configuration.TedaConfiguration;
+import com.brielmayer.teda.database.BaseDatabase;
+import com.brielmayer.teda.database.DatabaseFactory;
+import com.brielmayer.teda.model.DocumentType;
+import com.brielmayer.teda.util.ResourceReader;
 
 @Testcontainers
 public class PostgresSuiteTest {
@@ -40,7 +41,6 @@ public class PostgresSuiteTest {
                 .withDatabase(database.getDataSource())
                 .build();
 
-        new Teda(configuration)
-                .execute(ResourceReader.asInputStream("teda/LOAD_TEST.xlsx"), DocumentType.EXCEL);
+        new Teda(configuration).execute(ResourceReader.asInputStream("teda/LOAD_TEST.xlsx"), DocumentType.EXCEL);
     }
 }

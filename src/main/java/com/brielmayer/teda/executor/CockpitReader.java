@@ -1,15 +1,15 @@
 package com.brielmayer.teda.executor;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import com.brielmayer.teda.exception.TedaException;
 import com.brielmayer.teda.model.Action;
 import com.brielmayer.teda.model.Document;
 import com.brielmayer.teda.model.Table;
 import com.brielmayer.teda.parser.Parser;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Extracts the cockpit table from a {@link Document} and turns its cells into

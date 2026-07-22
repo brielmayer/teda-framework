@@ -1,5 +1,10 @@
 package com.brielmayer.teda.sheetType;
 
+import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
 import com.brielmayer.teda.Teda;
 import com.brielmayer.teda.configuration.TedaConfiguration;
 import com.brielmayer.teda.database.BaseDatabase;
@@ -7,10 +12,6 @@ import com.brielmayer.teda.database.DatabaseFactory;
 import com.brielmayer.teda.model.DocumentType;
 import com.brielmayer.teda.util.ResourceReader;
 import com.mysql.cj.jdbc.MysqlDataSource;
-import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
 public class OdsTest {

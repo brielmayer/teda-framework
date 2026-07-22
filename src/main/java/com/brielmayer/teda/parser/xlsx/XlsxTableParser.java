@@ -1,18 +1,19 @@
 package com.brielmayer.teda.parser.xlsx;
 
-import com.brielmayer.teda.model.Header;
-import com.brielmayer.teda.model.Table;
-import com.brielmayer.teda.parser.Coord;
-import com.brielmayer.teda.parser.Parser;
-import org.dhatim.fastexcel.reader.Cell;
-import org.dhatim.fastexcel.reader.CellType;
-import org.dhatim.fastexcel.reader.Row;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+
+import org.dhatim.fastexcel.reader.Cell;
+import org.dhatim.fastexcel.reader.CellType;
+import org.dhatim.fastexcel.reader.Row;
+
+import com.brielmayer.teda.model.Header;
+import com.brielmayer.teda.model.Table;
+import com.brielmayer.teda.parser.Coord;
+import com.brielmayer.teda.parser.Parser;
 
 public class XlsxTableParser {
 
@@ -29,11 +30,7 @@ public class XlsxTableParser {
         final List<Header> headers = XlsxHeaderParser.parseHeader(rows, coord);
         final List<Map<String, Object>> data = XlsxDataParser.parseData(rows, coord);
 
-        return Table.builder()
-                .name(tableName)
-                .headers(headers)
-                .data(data)
-                .build();
+        return Table.builder().name(tableName).headers(headers).data(data).build();
     }
 
     private static String parseTableName(List<Row> rows, Coord coord) {

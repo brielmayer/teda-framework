@@ -1,11 +1,12 @@
 package com.brielmayer.teda.database;
 
-import com.brielmayer.teda.exception.TedaException;
-
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ServiceLoader;
+
+import javax.sql.DataSource;
+
+import com.brielmayer.teda.exception.TedaException;
 
 public final class DatabaseFactory {
 

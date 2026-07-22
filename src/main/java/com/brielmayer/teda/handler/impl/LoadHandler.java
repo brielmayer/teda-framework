@@ -1,14 +1,15 @@
 package com.brielmayer.teda.handler.impl;
 
+import java.sql.SQLException;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.brielmayer.teda.database.BaseDatabase;
 import com.brielmayer.teda.exception.TedaException;
 import com.brielmayer.teda.handler.ILoadHandler;
 import com.brielmayer.teda.model.Table;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.sql.SQLException;
-import java.util.Map;
 
 public final class LoadHandler implements ILoadHandler {
 

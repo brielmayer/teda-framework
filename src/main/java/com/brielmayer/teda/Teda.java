@@ -1,5 +1,11 @@
 package com.brielmayer.teda;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import com.brielmayer.teda.configuration.TedaConfiguration;
 import com.brielmayer.teda.database.DatabaseFactory;
 import com.brielmayer.teda.exception.TedaException;
@@ -8,12 +14,6 @@ import com.brielmayer.teda.model.Document;
 import com.brielmayer.teda.model.DocumentType;
 import com.brielmayer.teda.parser.Parser;
 import com.brielmayer.teda.parser.ParserFactory;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class Teda {
 

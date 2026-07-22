@@ -1,8 +1,7 @@
 package com.brielmayer.teda.comparator;
 
-import com.brielmayer.teda.exception.TedaException;
-import com.brielmayer.teda.model.Header;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -11,8 +10,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+
+import com.brielmayer.teda.exception.TedaException;
+import com.brielmayer.teda.model.Header;
 
 class SortComparatorTest {
 
@@ -33,11 +34,8 @@ class SortComparatorTest {
     @Test
     void sortsNumericPrimaryKeyNumericallyNotLexicographically() {
         // the old comparator compared the whole row's toString(), so "10" sorted before "2"
-        final List<Map<String, Object>> rows = new ArrayList<>(Arrays.asList(
-                row("id", 10L),
-                row("id", 2L),
-                row("id", 1L)
-        ));
+        final List<Map<String, Object>> rows =
+                new ArrayList<>(Arrays.asList(row("id", 10L), row("id", 2L), row("id", 1L)));
 
         rows.sort(new SortComparator(Arrays.asList(Header.fromName("#id"))));
 
@@ -48,12 +46,10 @@ class SortComparatorTest {
     void sortsExpectedLongAndActualBigDecimalIntoTheSameOrder() {
         // expected values come from the spreadsheet (Long), actual values from the DB (BigDecimal);
         // both must end up in the same logical order so rows line up positionally
-        final List<Map<String, Object>> expected = new ArrayList<>(Arrays.asList(
-                row("id", 10L), row("id", 1L), row("id", 2L)
-        ));
+        final List<Map<String, Object>> expected =
+                new ArrayList<>(Arrays.asList(row("id", 10L), row("id", 1L), row("id", 2L)));
         final List<Map<String, Object>> actual = new ArrayList<>(Arrays.asList(
-                row("id", new BigDecimal("2")), row("id", new BigDecimal("10")), row("id", new BigDecimal("1"))
-        ));
+                row("id", new BigDecimal("2")), row("id", new BigDecimal("10")), row("id", new BigDecimal("1"))));
 
         final SortComparator comparator = new SortComparator(Arrays.asList(Header.fromName("#id")));
         expected.sort(comparator);
@@ -65,26 +61,21 @@ class SortComparatorTest {
 
     @Test
     void sortsByMultiplePrimaryKeysInOrder() {
-        final List<Map<String, Object>> rows = new ArrayList<>(Arrays.asList(
-                row("group", "A", "id", 2L),
-                row("group", "B", "id", 1L),
-                row("group", "A", "id", 1L)
-        ));
+        final List<Map<String, Object>> rows = new ArrayList<>(
+                Arrays.asList(row("group", "A", "id", 2L), row("group", "B", "id", 1L), row("group", "A", "id", 1L)));
 
         rows.sort(new SortComparator(Arrays.asList(Header.fromName("#group"), Header.fromName("#id"))));
 
-        assertEquals(Arrays.asList("A", "A", "B"), rows.stream().map(r -> r.get("group")).collect(java.util.stream.Collectors.toList()));
+        assertEquals(
+                Arrays.asList("A", "A", "B"),
+                rows.stream().map(r -> r.get("group")).collect(java.util.stream.Collectors.toList()));
         assertEquals(Arrays.asList(1L, 2L, 1L), idColumn(rows));
     }
 
     @Test
     void throwsWhenPrimaryKeyTypesAreInconsistentWithinAList() {
-        final List<Map<String, Object>> rows = new ArrayList<>(Arrays.asList(
-                row("id", 1L),
-                row("id", "not-a-number")
-        ));
+        final List<Map<String, Object>> rows = new ArrayList<>(Arrays.asList(row("id", 1L), row("id", "not-a-number")));
 
-        assertThrows(TedaException.class,
-                () -> rows.sort(new SortComparator(Arrays.asList(Header.fromName("#id")))));
+        assertThrows(TedaException.class, () -> rows.sort(new SortComparator(Arrays.asList(Header.fromName("#id")))));
     }
 }

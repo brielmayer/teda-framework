@@ -1,8 +1,9 @@
 package com.brielmayer.teda.handler.impl;
 
-import com.brielmayer.teda.handler.IExecutionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.brielmayer.teda.handler.IExecutionHandler;
 
 /**
  * Default implementation of {@link IExecutionHandler} that logs the value to the console.

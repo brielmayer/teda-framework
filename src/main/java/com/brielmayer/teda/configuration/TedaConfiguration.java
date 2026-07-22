@@ -1,11 +1,11 @@
 package com.brielmayer.teda.configuration;
 
+import javax.sql.DataSource;
+
 import com.brielmayer.teda.handler.IExecutionHandler;
 import com.brielmayer.teda.handler.ILoadHandler;
 import com.brielmayer.teda.handler.ITestHandler;
 import com.brielmayer.teda.handler.ITruncateHandler;
-
-import javax.sql.DataSource;
 
 public class TedaConfiguration {
 

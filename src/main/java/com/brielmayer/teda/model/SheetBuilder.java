@@ -7,8 +7,7 @@ public final class SheetBuilder {
     private String name;
     private Map<String, Table> tables;
 
-    SheetBuilder() {
-    }
+    SheetBuilder() {}
 
     public SheetBuilder name(final String name) {
         this.name = name;

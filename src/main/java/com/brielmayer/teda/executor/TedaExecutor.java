@@ -1,5 +1,7 @@
 package com.brielmayer.teda.executor;
 
+import java.util.List;
+
 import com.brielmayer.teda.database.BaseDatabase;
 import com.brielmayer.teda.handler.IExecutionHandler;
 import com.brielmayer.teda.handler.ILoadHandler;
@@ -7,8 +9,6 @@ import com.brielmayer.teda.handler.ITestHandler;
 import com.brielmayer.teda.handler.ITruncateHandler;
 import com.brielmayer.teda.model.Document;
 import com.brielmayer.teda.model.Sheet;
-
-import java.util.List;
 
 public class TedaExecutor {
 
@@ -48,18 +48,14 @@ public class TedaExecutor {
                 break;
             case LOAD:
                 final Sheet loadSheet = document.getSheets().get(value);
-                loadSheet.getTables()
-                        .values()
-                        .forEach(table -> loadHandler.load(loadDatabase, table));
+                loadSheet.getTables().values().forEach(table -> loadHandler.load(loadDatabase, table));
                 break;
             case EXECUTE:
                 executionHandler.execute(value);
                 break;
             case TEST:
                 final Sheet testSheet = document.getSheets().get(value);
-                testSheet.getTables()
-                        .values()
-                        .forEach(table -> testHandler.test(testDatabase, table));
+                testSheet.getTables().values().forEach(table -> testHandler.test(testDatabase, table));
                 break;
         }
     }

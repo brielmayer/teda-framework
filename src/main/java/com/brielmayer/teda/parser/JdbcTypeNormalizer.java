@@ -34,8 +34,7 @@ final class JdbcTypeNormalizer implements TypeNormalizer {
             Map.entry(Date.class, v -> ((Date) v).toLocalDate()),
             Map.entry(Time.class, v -> ((Time) v).toLocalTime()),
             Map.entry(Timestamp.class, v -> ((Timestamp) v).toLocalDateTime()),
-            Map.entry(UUID.class, Object::toString)
-    );
+            Map.entry(UUID.class, Object::toString));
 
     @Override
     public Object normalize(final Object value) {
