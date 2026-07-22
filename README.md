@@ -15,6 +15,8 @@ It is particularly well suited for testing **ETL jobs, migrations, stored
 procedures, and reports**, where you often load into one database and verify the
 outcome in another.
 
+![A Cockpit sheet in Excel with the #Teda marker, a scenario name, and one row of TRUNCATE/LOAD/EXECUTE/TEST actions.](docs/images/cockpit.png)
+
 ---
 
 ## Table of Contents
@@ -179,6 +181,8 @@ or table the action applies to. Empty cells are skipped.
 Any other sheet can hold one or more `#Table` blocks. A `#Table` marker is followed
 by the **target database table name**, then a header row of column names, then the
 data rows.
+
+![A data sheet in Excel with a #Table STUDENT marker, header row of #ID/NAME/AGE/AVERAGE, and four data rows.](docs/images/data-sheet.png)
 
 Sheet `StudentInput` (data to load):
 
