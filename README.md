@@ -75,8 +75,8 @@ Teda is a Java 11 library built with Maven. Add it as a test dependency:
 
 ```xml
 <dependency>
-    <groupId>com.brielmayer</groupId>
-    <artifactId>teda-framework</artifactId>
+    <groupId>com.brielmayer.teda</groupId>
+    <artifactId>teda</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <scope>test</scope>
 </dependency>
