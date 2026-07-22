@@ -67,10 +67,15 @@ The correct database implementation is resolved automatically from the
 
 ## Supported File Formats
 
-| Format                   | Extension | Library                           |
-|--------------------------|-----------|-----------------------------------|
-| Excel                    | `.xlsx`   | [FastExcel](https://github.com/dhatim/fastexcel) |
-| OpenDocument Spreadsheet | `.ods`    | [SODS](https://github.com/miachm/SODS) |
+| Format                   | Extension    |
+|--------------------------|--------------|
+| Excel                    | `.xlsx`      |
+| OpenDocument Spreadsheet | `.ods`       |
+| CSV (directory)          | `.csv` files |
+
+For CSV, point Teda at a **directory** that contains one `.csv` file per sheet
+(file name without the `.csv` becomes the sheet name). Useful when your test
+data lives in git and should diff cleanly, no Excel required to edit it.
 
 ## Getting Started
 
@@ -89,15 +94,16 @@ Point Teda at a `DataSource` and a spreadsheet via the fluent
 `TedaConfiguration` builder:
 
 ```java
-
+import com.brielmayer.teda.Teda;
 import com.brielmayer.teda.configuration.TedaConfiguration;
+import com.brielmayer.teda.model.DocumentType;
 
 TedaConfiguration configuration = TedaConfiguration.builder()
         .withDatabase(dataSource)
         .build();
 
 new Teda(configuration)
-        .execute("teda/STUDENT_TEST.xlsx");
+        .execute("teda/STUDENT_TEST.xlsx", DocumentType.EXCEL);
 ```
 
 A typical JUnit 5 test looks like this:
@@ -114,7 +120,7 @@ class StudentTest {
                 .build();
 
         new Teda(configuration)
-                .execute("teda/STUDENT_TEST.xlsx");
+                .execute("teda/STUDENT_TEST.xlsx", DocumentType.EXCEL);
     }
 }
 ```
@@ -204,6 +210,46 @@ Sheet `StudentExpected` (expected result):
 Teda sorts both expected and actual rows by these columns before comparing, so row
 order in the spreadsheet and in the database does not matter.
 
+### 3. CSV directories
+
+For CSV, each sheet lives in its own `.csv` file inside a directory. The file
+name (without extension) becomes the sheet name, so `Cockpit.csv` is treated
+as the sheet named `Cockpit`.
+
+```
+tests/loadStudents/
+├── Cockpit.csv
+├── StudentInput.csv
+└── StudentExpected.csv
+```
+
+The `#Teda` / `#Table` marker sits in the first cell of the first row, with
+the scenario or table name in the cell next to it. The header row follows
+directly below, then the data rows, each aligned to the marker column.
+
+`Cockpit.csv`:
+
+```csv
+#Teda,LoadTest
+TRUNCATE,LOAD,EXECUTE,TEST
+STUDENT,StudentInput,importJob,StudentExpected
+```
+
+`StudentInput.csv`:
+
+```csv
+#Table,STUDENT
+#id,name,age,average
+1,Alice,21,1.75
+2,Bob,23,2.30
+```
+
+Point Teda at the directory:
+
+```java
+new Teda(configuration).execute("tests/loadStudents", DocumentType.CSV);
+```
+
 ## Actions Reference
 
 Each column header in the Cockpit's `#Teda` table is one of the following actions.
@@ -244,7 +290,7 @@ TedaConfiguration configuration = TedaConfiguration.builder()
         .build();
 
 new Teda(configuration)
-        .execute("teda/MIGRATION_TEST.xlsx");
+        .execute("teda/MIGRATION_TEST.xlsx", DocumentType.EXCEL);
 ```
 
 Here `LOAD` writes to the **source** database, `EXECUTE` runs your migration, and
