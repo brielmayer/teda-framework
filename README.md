@@ -93,12 +93,8 @@ TedaConfiguration configuration = TedaConfiguration.builder()
         .withDatabase(dataSource)
         .build();
 
-new
-
-Teda(configuration)
-        .
-
-execute("src/test/resources/teda/STUDENT_TEST.xlsx");
+new Teda(configuration)
+        .execute("teda/STUDENT_TEST.xlsx");
 ```
 
 A typical JUnit 5 test looks like this:
@@ -169,10 +165,10 @@ The first sheet **must be named `Cockpit`** and contain a `#Teda` table. Its col
 headers are the [actions](#actions-reference); each row's cells reference the sheet
 or table the action applies to. Empty cells are skipped.
 
-| #Teda    | *(scenario)* |          |            |
-|----------|--------------|----------|------------|
-| TRUNCATE | LOAD         | EXECUTE  | TEST       |
-| STUDENT  | StudentInput | importJob| StudentExpected |
+| #Teda    | *(scenario)* |           |                 |
+|----------|--------------|-----------|-----------------|
+| TRUNCATE | LOAD         | EXECUTE   | TEST            |
+| STUDENT  | StudentInput | importJob | StudentExpected |
 
 > The `#Teda` marker cell is followed by a free-text name in the cell to its right.
 > The header row below defines which actions run; each data row is one scenario.
@@ -208,12 +204,12 @@ order in the spreadsheet and in the database does not matter.
 Each column header in the Cockpit's `#Teda` table is one of the following actions.
 Within a row they always execute in this order:
 
-| Action     | Cell value refers to        | Effect |
-|------------|-----------------------------|--------|
-| `TRUNCATE` | a database table name       | Empties the table in the **test** database before loading. |
-| `LOAD`     | a sheet name                | Inserts every `#Table` block on that sheet into the **load** database. |
-| `EXECUTE`  | any value                   | Passes the value to your [`IExecutionHandler`](#custom-handlers), which typically triggers an ETL job, stored procedure, etc. |
-| `TEST`     | a sheet name                | Reads each `#Table` block's table from the **test** database and asserts it equals the expected rows. |
+| Action     | Cell value refers to  | Effect                                                                                                                        |
+|------------|-----------------------|-------------------------------------------------------------------------------------------------------------------------------|
+| `TRUNCATE` | a database table name | Empties the table in the **test** database before loading.                                                                    |
+| `LOAD`     | a sheet name          | Inserts every `#Table` block on that sheet into the **load** database.                                                        |
+| `EXECUTE`  | any value             | Passes the value to your [`IExecutionHandler`](#custom-handlers), which typically triggers an ETL job, stored procedure, etc. |
+| `TEST`     | a sheet name          | Reads each `#Table` block's table from the **test** database and asserts it equals the expected rows.                         |
 
 ## Type Handling
 
@@ -288,21 +284,11 @@ TedaConfiguration configuration = TedaConfiguration.builder()
 
 ## FAQ
 
-**Does Teda pull in Apache POI?**
-No. Since version 1.0 Teda uses [FastExcel](https://github.com/dhatim/fastexcel)
-for `.xlsx` and [SODS](https://github.com/miachm/SODS) for `.ods`. Both are small,
-actively maintained, and free of Log4j transitive dependencies.
-
 **How are Excel formulas handled?**
 Teda reads the **cached result** of the formula, not the formula text. This is what
 Excel writes to the file the last time it saved. If a spreadsheet is generated
 programmatically without ever being opened by Excel or LibreOffice, formula cells
 may not have cached values; in that case Teda returns an empty string.
-
-**Do I need Docker to use Teda in my own tests?**
-Only if your own tests happen to use Testcontainers. The Teda library itself is a
-plain Java dependency. Teda's *own* test suite uses Testcontainers to verify
-against real MySQL, PostgreSQL, Oracle, SQL Server, and MariaDB instances.
 
 **Can I compare a subset of columns?**
 Only columns that appear as headers in the expected `#Table` block are compared.
@@ -311,7 +297,7 @@ ignored.
 
 ## Building from Source
 
-Requirements: **JDK 11 or newer** (built and tested on 11 and 17).
+Requirements: **JDK 11 or newer**.
 
 ```bash
 # Compile and run the full test suite
