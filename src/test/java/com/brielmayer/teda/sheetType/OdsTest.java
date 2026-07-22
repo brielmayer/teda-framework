@@ -40,6 +40,7 @@ public class OdsTest {
                 .build();
 
         new Teda(configuration)
-                .execute(ResourceReader.asInputStream("teda/LOAD_TEST.ods"), DocumentType.OPEN_DOCUMENT_SPREADSHEET);
+                .execute(
+                        ResourceReader.asInputStream("teda/ods/LOAD_TEST.ods"), DocumentType.OPEN_DOCUMENT_SPREADSHEET);
     }
 }

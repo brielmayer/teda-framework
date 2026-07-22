@@ -60,6 +60,7 @@ outcome in another.
 | Oracle               | ✅ |
 | MariaDB              | ✅ |
 | H2                   | ✅ |
+| SQLite               | ✅ |
 
 The correct database implementation is resolved automatically from the
 `DataSource` using Java's `ServiceLoader` mechanism. You only provide a

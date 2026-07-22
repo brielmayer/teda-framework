@@ -55,6 +55,6 @@ public class DifferentDatabasesTest {
                 .build();
 
         new Teda(tedaConfiguration)
-                .execute(ResourceReader.asInputStream("teda/DIFFERENT_DATABASE_TEST.xlsx"), DocumentType.EXCEL);
+                .execute(ResourceReader.asInputStream("teda/xlsx/DIFFERENT_DATABASE_TEST.xlsx"), DocumentType.EXCEL);
     }
 }

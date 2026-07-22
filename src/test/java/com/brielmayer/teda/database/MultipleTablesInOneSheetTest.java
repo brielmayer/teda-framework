@@ -41,6 +41,8 @@ public class MultipleTablesInOneSheetTest {
                 .build();
 
         new Teda(tedaConfiguration)
-                .execute(ResourceReader.asInputStream("teda/MULTIPLE_TABLES_IN_ONE_SHEET.xlsx"), DocumentType.EXCEL);
+                .execute(
+                        ResourceReader.asInputStream("teda/xlsx/MULTIPLE_TABLES_IN_ONE_SHEET.xlsx"),
+                        DocumentType.EXCEL);
     }
 }

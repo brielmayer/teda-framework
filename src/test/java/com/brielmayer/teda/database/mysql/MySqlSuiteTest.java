@@ -43,7 +43,7 @@ public class MySqlSuiteTest {
                 .withDatabase(database.getDataSource())
                 .build();
 
-        new Teda(configuration).execute(ResourceReader.asInputStream("teda/LOAD_TEST.xlsx"), DocumentType.EXCEL);
+        new Teda(configuration).execute(ResourceReader.asInputStream("teda/xlsx/LOAD_TEST.xlsx"), DocumentType.EXCEL);
     }
 
     @Test
@@ -53,6 +53,6 @@ public class MySqlSuiteTest {
                 .withDatabase(database.getDataSource())
                 .build();
 
-        new Teda(configuration).execute(ResourceReader.asInputStream("teda/LOAD_TEST.xlsx"), DocumentType.EXCEL);
+        new Teda(configuration).execute(ResourceReader.asInputStream("teda/xlsx/LOAD_TEST.xlsx"), DocumentType.EXCEL);
     }
 }
