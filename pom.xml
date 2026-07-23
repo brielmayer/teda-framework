@@ -11,6 +11,11 @@
     <description>Data-driven database testing described entirely in a spreadsheet.</description>
     <url>https://github.com/brielmayer/teda</url>
 
+    <organization>
+        <name>Brielmayer Consulting GmbH</name>
+        <url>https://brielmayer.com</url>
+    </organization>
+
     <licenses>
         <license>
             <name>The Apache License, Version 2.0</name>
@@ -18,11 +23,6 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-
-    <organization>
-        <name>Brielmayer Consulting GmbH</name>
-        <url>https://brielmayer.com</url>
-    </organization>
 
     <developers>
         <developer>
